@@ -2,27 +2,27 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:fo="http://www.w3.org/1999/XSL/Format"
-    xmlns:jt="http://joeytakeda.github.io/ns/"
+    xmlns:cv="http://github.com/joeytakeda/cv/ns"
     exclude-result-prefixes="xs"
     xmlns="http://www.w3.org/1999/XSL/Format"
-    xpath-default-namespace="http://joeytakeda.github.io/ns/"
+    xpath-default-namespace="http://github.com/joeytakeda/cv/ns"
     version="2.0">
     
+    <xsl:include href="functions.xsl"/>
     
     <!--Decide whether or not I want to display references online-->
     <xsl:param name="displayReferences" select="'false'"/>
-    <xsl:param name="displayMonth" select="'false'"/>
     <xsl:param name="displayDesc" select="'false'"/>
     <xsl:param name="date"/>
     
     
     <xsl:template match="/">
         <xsl:message>Creating FO file...</xsl:message>
-        <xsl:message>
+       <!-- <xsl:message>
             References displayed: <xsl:value-of select="$displayReferences"/>
             Months displayed: <xsl:value-of select="$displayMonth"/>
             Descriptions displayed: <xsl:value-of select="$displayDesc"/>
-        </xsl:message>
+        </xsl:message>-->
         <xsl:message>
            
         </xsl:message>
@@ -90,7 +90,7 @@
     
     <!--Each section-->
     
-    <xsl:template match="title[not(@level='m')]">
+    <xsl:template match="head">
         <block font-weight="600" font-size="16pt" padding=".5em 0" keep-with-next.within-page="always">
             <xsl:value-of select="upper-case(.)"/>
         </block>
@@ -99,7 +99,7 @@
     <!--Make these tables-->
     <xsl:template match="education | awards | teaching | service | employment">
         <block>
-        <xsl:apply-templates select="title"/>
+        <xsl:apply-templates select="head"/>
         <!--Switch for if the dates should be on the left 
             or right-->
         <xsl:variable name="dateCol" select="2"/>
@@ -110,7 +110,7 @@
                         <xsl:value-of select="if (descendant::*[@to or @from]) then 18 else 14.5"/>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:value-of select="18"/>
+                        <xsl:value-of select="22"/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:variable>
@@ -143,12 +143,15 @@
                     <block padding=".1em 0" text-align="left">
                         <inline text-align="left">
                             <xsl:choose>
-                                <xsl:when test="parent::teaching and self::job[matches(@when,'\d{4}-\d{2}-\d{2}')]">
-                                    <xsl:value-of select="format-date(@when,'[MNn] [D01], [Y0001]')"/>
+                                <xsl:when test="@when">
+                                   <xsl:value-of select="cv:formatSingleDate(@when)"/>
                                 </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:apply-templates select="@when|@to|@from"/>
-                                </xsl:otherwise>
+                                <xsl:when test="@to and @from">
+                                    <xsl:value-of select="cv:formatDateRange(@from,@to)"/>
+                                </xsl:when>
+                                <xsl:when test="@from">
+                                    <xsl:value-of select="cv:formatSingleDate(@from)"/><xsl:text>–present</xsl:text>
+                                </xsl:when>
                             </xsl:choose>
                             
                         </inline>
@@ -221,7 +224,7 @@
     </xsl:template>
     
     
-    <xsl:template match="@when">
+   <!-- <xsl:template match="@when">
         <xsl:value-of select="jt:yearFromDate(.)"/>
     </xsl:template>
     
@@ -240,7 +243,7 @@
         <xsl:if test="not(jt:yearFromDate($preceding-from)=jt:yearFromDate(.))">
             <xsl:value-of select="jt:yearFromDate(.)"/>
         </xsl:if>
-    </xsl:template>
+    </xsl:template>-->
     
     <xsl:template match="ref[@target]">
         <xsl:choose>
@@ -263,7 +266,7 @@
     
     <xsl:template match="references">
         <block>
-            <xsl:apply-templates select="title"/>
+            <xsl:apply-templates select="head"/>
             <xsl:choose>
                 <xsl:when test="$displayReferences='true'">
                     <xsl:for-each select="reference">
@@ -286,17 +289,5 @@
     
     
     
-    <xsl:function name="jt:yearFromDate" as="xs:string">
-        <xsl:param name="string"/>
-        <xsl:variable name="tokens" select="tokenize($string,'-')"/>
-        <xsl:choose>
-            <xsl:when test="$displayMonth='true' and count($tokens) gt 1">
-                <xsl:variable name="dateFull" select="xs:date(concat($tokens[1],'-',$tokens[2],'-','01'))" as="xs:date"/>
-                <xsl:value-of select="format-date($dateFull,'[MNn] [Y0001]')"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="$tokens[1]"/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:function>
+   
 </xsl:stylesheet>

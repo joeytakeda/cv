@@ -6,11 +6,13 @@
     version="2.0"
     xmlns="http://www.tei-c.org/ns/1.0"
     xmlns:tei="http://www.tei-c.org/ns/1.0"
-    xpath-default-namespace="http://joeytakeda.github.io/ns/"
+    xpath-default-namespace="http://github.com/joeytakeda/cv/ns"
     xmlns:hcmc="http://hcmc.uvic.ca/ns"
     xmlns:saxon="http://saxon.sf.net/"
-    xmlns:jt="http://joeytakeda.github.io/ns/"
+    xmlns:cv="http://github.com/joeytakeda/cv/ns"
     >
+    
+    <xsl:include href="functions.xsl"/>
     
     <xsl:param name="date"/>
     <xsl:output method="xml" encoding="UTF-8" normalization-form="NFC" indent="yes" exclude-result-prefixes="#all"/>
@@ -84,7 +86,7 @@
     </xsl:template>
     
     <xsl:template match="awards/award">
-        <item><xsl:value-of select ="."/> (<xsl:copy-of select="jt:getDateFromElement(.)"/>)</item>
+        <item><xsl:value-of select ="."/> (<xsl:copy-of select="cv:getDateFromElement(.)"/>)</item>
     </xsl:template>
     
     <xsl:template match="publications | conferences">
@@ -120,10 +122,10 @@
         <item>
             <xsl:choose>
                 <xsl:when test="parent::teaching">
-                    <p>Taught <xsl:value-of select="class"/> in the role of <xsl:value-of select="role"/> (<xsl:copy-of select="jt:getDateFromElement(.)"/>).</p>
+                    <p>Taught <xsl:value-of select="class"/> in the role of <xsl:value-of select="role"/> (<xsl:copy-of select="cv:getDateFromElement(.)"/>).</p>
                 </xsl:when>
                 <xsl:otherwise>
-                    <p><xsl:value-of select="job_title"/> at <xsl:value-of select="workplace"/>.<xsl:if test="supervisor">Supervised by <xsl:value-of select="supervisor"/>.</xsl:if> (<xsl:copy-of select="jt:getDateFromElement(.)"/>)</p>
+                    <p><xsl:value-of select="job_title"/> at <xsl:value-of select="workplace"/>.<xsl:if test="supervisor">Supervised by <xsl:value-of select="supervisor"/>.</xsl:if> (<xsl:copy-of select="cv:getDateFromElement(.)"/>)</p>
                 </xsl:otherwise>
             </xsl:choose>
            
@@ -133,7 +135,7 @@
     <!--Suppress-->
     <xsl:template match="cv/*/title | references | email |name"/>
     
-    <xsl:function name="jt:getDateFromElement" as="element(tei:date)">
+    <xsl:function name="cv:getDateFromElement" as="element(tei:date)">
         <xsl:param name="el" as="element()"/>
         <date>
             <xsl:copy-of select="$el/@*"/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--Initially generated automatically by oXygen from example; subsequently edited by hand-->
-<grammar ns="http://joeytakeda.github.io/ns/" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+<grammar ns="http://github.com/joeytakeda/cv/ns" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
     <element name="cv">
       <element name="name">
@@ -13,7 +13,7 @@
         <text/>
       </element>
       <element name="education">
-        <ref name="title"/>
+        <ref name="head"/>
         <oneOrMore>
           <element name="degree">
             <attribute name="from">
@@ -37,7 +37,7 @@
         </oneOrMore>
       </element>
       <element name="awards">
-        <ref name="title"/>
+        <ref name="head"/>
         <oneOrMore>
           <element name="award">
             <attribute name="when">
@@ -48,7 +48,7 @@
         </oneOrMore>
       </element>
       <element name="publications">
-        <ref name="title"/>
+        <ref name="head"/>
         <oneOrMore>
           <element name="publication">
             <oneOrMore>
@@ -62,7 +62,7 @@
         </oneOrMore>
       </element>
       <element name="conferences">
-        <ref name="title"/>
+        <ref name="head"/>
         <oneOrMore>
           <element name="conference">
             <oneOrMore>
@@ -76,25 +76,25 @@
         </oneOrMore>
       </element>
       <element name="teaching">
-        <ref name="title"/>
+        <ref name="head"/>
         <oneOrMore>
           <ref name="job"/>
         </oneOrMore>
       </element>
       <element name="employment">
-        <ref name="title"/>
+        <ref name="head"/>
         <oneOrMore>
           <ref name="job"/>
         </oneOrMore>
       </element>
       <element name="service">
-        <ref name="title"/>
+        <ref name="head"/>
         <oneOrMore>
           <ref name="job"/>
         </oneOrMore>
       </element>
       <element name="references">
-        <ref name="title"/>
+        <ref name="head"/>
       </element>
     </element>
   </start>
@@ -102,7 +102,19 @@
     <element name="title">
       <optional>
         <attribute name="level">
-          <data type="NCName"/>
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">indicates the bibliographic level for a title. Taken from the TEI P5 Guidelines.</a:documentation>
+          <choice>
+            <value>a</value>
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(analytic) the title applies to an analytic item, such as an article, poem, or other work published as part of a larger item.</a:documentation>
+            <value>m</value>
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(monographic) the title applies to a monograph such as a book or other item considered to be a distinct publication, including single volumes of multi-volume works</a:documentation>
+            <value>j</value>
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(journal) the title applies to any serial or periodical publication such as a journal, magazine, or newspaper</a:documentation>
+            <value>s</value>
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(series) the title applies to a series of otherwise distinct publications such as a collection</a:documentation>
+            <value>u</value>
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(unpublished) the title applies to any unpublished material (including theses and dissertations unless published by a commercial press)</a:documentation>
+          </choice>
         </attribute>
       </optional>
       <oneOrMore>
@@ -111,6 +123,11 @@
           <ref name="ref"/>
         </choice>
       </oneOrMore>
+    </element>
+  </define>
+  <define name="head">
+    <element name="head">
+      <text/>
     </element>
   </define>
   <define name="ref">
@@ -130,17 +147,44 @@
     <element name="job">
       <optional>
         <attribute name="from">
-          <data type="NMTOKEN"/>
+          <choice>
+            <data type="date"/>
+            <data type="gYear"/>
+            <data type="gMonth"/>
+            <data type="gDay"/>
+            <data type="gYearMonth"/>
+            <data type="gMonthDay"/>
+            <data type="time"/>
+            <data type="dateTime"/>
+          </choice>
         </attribute>
       </optional>
       <optional>
         <attribute name="to">
-          <data type="NMTOKEN"/>
+          <choice>
+            <data type="date"/>
+            <data type="gYear"/>
+            <data type="gMonth"/>
+            <data type="gDay"/>
+            <data type="gYearMonth"/>
+            <data type="gMonthDay"/>
+            <data type="time"/>
+            <data type="dateTime"/>
+          </choice>
         </attribute>
       </optional>
       <optional>
         <attribute name="when">
-          <data type="date"/>
+          <choice>
+            <data type="date"/>
+            <data type="gYear"/>
+            <data type="gMonth"/>
+            <data type="gDay"/>
+            <data type="gYearMonth"/>
+            <data type="gMonthDay"/>
+            <data type="time"/>
+            <data type="dateTime"/>
+          </choice>
         </attribute>
       </optional>
       <choice>

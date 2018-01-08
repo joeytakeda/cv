@@ -5,11 +5,13 @@
     exclude-result-prefixes="#all"
     version="2.0"
     xmlns="http://www.w3.org/1999/xhtml"
-    xpath-default-namespace="http://joeytakeda.github.io/ns/"
+    xpath-default-namespace="http://github.com/joeytakeda/cv/ns"
     xmlns:hcmc="http://hcmc.uvic.ca/ns"
     xmlns:saxon="http://saxon.sf.net/"
-    xmlns:jt="http://joeytakeda.github.io/ns/"
+    xmlns:cv="http://github.com/joeytakeda/cv/ns"
     >
+    
+    <xsl:include href="functions.xsl"/>
     
     <xsl:template match="cv">
        <xsl:message>Creating XHTML5 CV.</xsl:message>
@@ -53,7 +55,7 @@
             <xsl:apply-templates/>
         </div>
     </xsl:template>
-    <xsl:template match="cv/*/title">
+    <xsl:template match="head">
         <h2><xsl:value-of select="upper-case(.)"/></h2>
         <hr/>
     </xsl:template>
@@ -102,11 +104,20 @@
     </xsl:template>
   
   <xsl:template match="@when">
-      <span class="date"><xsl:value-of select="."/></span>
+      <span class="date"><xsl:value-of select="cv:formatSingleDate(.)"/></span>
   </xsl:template>
     
     <xsl:template match="@from">
-        <span class="date"><xsl:value-of select="."/><xsl:if test="parent::*/@to">–<xsl:value-of select="parent::*/@to"/></xsl:if></span>
+        <span class="date">
+            <xsl:choose>
+                <xsl:when test="parent::*/@to">
+                    <xsl:value-of select="cv:formatDateRange(.,parent::*/@to)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="cv:formatSingleDate(.)"/><xsl:text>–present</xsl:text>
+                </xsl:otherwise>
+            </xsl:choose>
+        </span>
     </xsl:template>
     
     <xsl:template match="publication/title">
@@ -125,16 +136,7 @@
         
     </xsl:template>
     
-<!--    Elements to suppress-->
+<!--   suppress-->
     <xsl:template match="@to"/>
-    
-    <xsl:function name="jt:formatDate">
-        <xsl:param name="inDate" as="xs:date+"/>
-        <xsl:choose>
-            <xsl:when test="count($inDate)=1">
-                <xsl:value-of select="format-date($inDate,'[MNn] [D1o], [Y0001]')"/>
-            </xsl:when>
-        </xsl:choose>
-    </xsl:function>
     
 </xsl:stylesheet>
