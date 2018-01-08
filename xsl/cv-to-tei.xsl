@@ -133,7 +133,7 @@
     </xsl:template>
     
     <!--Suppress-->
-    <xsl:template match="cv/*/title | references | email |name"/>
+    <xsl:template match="head | references | email |name"/>
     
     <xsl:function name="cv:getDateFromElement" as="element(tei:date)">
         <xsl:param name="el" as="element()"/>
