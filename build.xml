@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="Build CV" default="pdf">
+  
+  <property name="echo.separator" value="****************************"/>
+  <property name="message" value="'Updating CV.'"/>
+  <property name="displayReferences">false</property>
+  <property name="displayMonth">false</property>
+  <property name="displayDesc">false</property>
+  <property name="source.dir" value="data"/>
+  <property name="source.cv" value="${source.dir}/CV.xml"/>
+  <property name="out.dir" value="out"/>
+    
+    <tstamp>
+        <format property="date" pattern="yyyy-MM-dd" locale="en"/>
+    </tstamp>
+    
+    <property name="fop.home" value="utilities/fop-2.0"/>
+    <property name="doc" value="CV"/>
+    
+    <taskdef name="fop"
+        classname="org.apache.fop.tools.anttasks.Fop">
+        <classpath>
+            <fileset dir="${fop.home}/lib">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${fop.home}/build">
+                <include name="fop.jar"/>
+                <include name="fop-hyph.jar" />
+            </fileset>
+        </classpath>
+    </taskdef>
+    
+    <target name="init">
+        <echo message="${echo.separator}"/>
+        <echo message="Cleaning up old versions of the build."/>
+        <delete dir="${out.dir}"/>
+        <mkdir dir="${out.dir}"/>
+    </target>
+    
+    <target name="xhtml">
+        <echo message="${echo.separator}"/>
+        <echo message="Creating XHTML5 version of the CV"/>
+        <java classname="net.sf.saxon.Transform" classpath="utilities/saxon9he.jar">
+            <arg value="-s:xml/${doc}.xml"/>
+            <arg value="-xsl:scripts/cv-to-xhtml.xsl"/> 
+            <arg value="-o:out/${doc}.html"/>
+            <arg value="date=${date}"/>
+            <arg value="--suppressXsltNamespaceCheck:on"/>
+        </java>
+    </target>
+    
+    <target name="tei">
+        <echo message="${echo.separator}"/>
+        <echo message="Creating TEI version of CV"/>
+        <java classname="net.sf.saxon.Transform" classpath="utilities/saxon9he.jar">
+            <arg value="-s:xml/${doc}.xml"/>
+            <arg value="-xsl:scripts/cv-to-tei.xsl"/> 
+            <arg value="-o:docs/${doc}.xml"/>
+            <arg value="date=${date}"/>
+            <arg value="--suppressXsltNamespaceCheck:on"/>
+        </java>
+    </target>
+    
+    <target name="pdf">
+        <echo message="${echo.separator}"/>
+        <echo message="Creating PDF version of the CV"/>
+        <java classname="net.sf.saxon.Transform" classpath="utilities/saxon9he.jar">
+            <arg value="-s:xml/${doc}.xml"/>
+            <arg value="-xsl:scripts/cv-to-pdf.xsl"/> 
+            <arg value="-o:docs/${doc}.fo"/>
+            <arg value="date=${date}"/>
+            <arg value="displayReferences=${displayReferences}"/>
+            <arg value="displayMonth=${displayMonth}"/>
+            <arg value="displayDesc=${displayDesc}"/>
+            <arg value="--suppressXsltNamespaceCheck:on"/>
+        </java>
+        <fop format="application/pdf"
+            fofile="docs/${doc}.fo"
+            outfile="docs/${doc}.pdf"
+            userconfig="utilities/fop-2.0/conf/fop.xconf"
+        />
+    </target>
+    
+   
+    
+    
+    <target name="all">
+        <antcall target="init"/>
+        <antcall target="xhtml"/>
+        <antcall target="tei"/>
+        <antcall target="pdf"/>
+    </target>
+</project>

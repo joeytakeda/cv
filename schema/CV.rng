@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Initially generated automatically by oXygen from example; subsequently edited by hand-->
+<grammar ns="http://joeytakeda.github.io/ns/" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <element name="cv">
+      <element name="name">
+        <attribute name="id">
+          <data type="NCName"/>
+        </attribute>
+        <text/>
+      </element>
+      <element name="email">
+        <text/>
+      </element>
+      <element name="education">
+        <ref name="title"/>
+        <oneOrMore>
+          <element name="degree">
+            <attribute name="from">
+              <data type="integer"/>
+            </attribute>
+            <optional>
+              <attribute name="to">
+                <data type="integer"/>
+              </attribute>
+            </optional>
+            <element name="degree_name">
+              <text/>
+            </element>
+            <element name="discipline">
+              <text/>
+            </element>
+            <element name="institution">
+              <text/>
+            </element>
+          </element>
+        </oneOrMore>
+      </element>
+      <element name="awards">
+        <ref name="title"/>
+        <oneOrMore>
+          <element name="award">
+            <attribute name="when">
+              <data type="integer"/>
+            </attribute>
+            <text/>
+          </element>
+        </oneOrMore>
+      </element>
+      <element name="publications">
+        <ref name="title"/>
+        <oneOrMore>
+          <element name="publication">
+            <oneOrMore>
+              <choice>
+                <text/>
+                <ref name="ref"/>
+                <ref name="title"/>
+              </choice>
+            </oneOrMore>
+          </element>
+        </oneOrMore>
+      </element>
+      <element name="conferences">
+        <ref name="title"/>
+        <oneOrMore>
+          <element name="conference">
+            <oneOrMore>
+              <choice>
+                <text/>
+                <ref name="ref"/>
+                <ref name="title"/>
+              </choice>
+            </oneOrMore>
+          </element>
+        </oneOrMore>
+      </element>
+      <element name="teaching">
+        <ref name="title"/>
+        <oneOrMore>
+          <ref name="job"/>
+        </oneOrMore>
+      </element>
+      <element name="employment">
+        <ref name="title"/>
+        <oneOrMore>
+          <ref name="job"/>
+        </oneOrMore>
+      </element>
+      <element name="service">
+        <ref name="title"/>
+        <oneOrMore>
+          <ref name="job"/>
+        </oneOrMore>
+      </element>
+      <element name="references">
+        <ref name="title"/>
+      </element>
+    </element>
+  </start>
+  <define name="title">
+    <element name="title">
+      <optional>
+        <attribute name="level">
+          <data type="NCName"/>
+        </attribute>
+      </optional>
+      <oneOrMore>
+        <choice>
+          <text/>
+          <ref name="ref"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="ref">
+    <element name="ref">
+      <attribute name="target">
+        <data type="anyURI"/>
+      </attribute>
+      <optional>
+        <attribute name="type">
+          <data type="NCName"/>
+        </attribute>
+      </optional>
+      <data type="anyURI"/>
+    </element>
+  </define>
+  <define name="job">
+    <element name="job">
+      <optional>
+        <attribute name="from">
+          <data type="NMTOKEN"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="to">
+          <data type="NMTOKEN"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="when">
+          <data type="date"/>
+        </attribute>
+      </optional>
+      <choice>
+        <group>
+          <element name="job_title">
+            <text/>
+          </element>
+          <oneOrMore>
+            <element name="workplace">
+              <oneOrMore>
+                <choice>
+                  <text/>
+                  <ref name="title"/>
+                </choice>
+              </oneOrMore>
+            </element>
+          </oneOrMore>
+        </group>
+        <group>
+          <element name="role">
+            <text/>
+          </element>
+          <element name="class">
+            <text/>
+          </element>
+        </group>
+      </choice>
+      <optional>
+        <element name="supervisor">
+          <text/>
+        </element>
+      </optional>
+      <optional>
+        <element name="desc">
+          <oneOrMore>
+            <choice>
+              <text/>
+              <ref name="title"/>
+            </choice>
+          </oneOrMore>
+        </element>
+      </optional>
+    </element>
+  </define>
+</grammar>
