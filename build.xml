@@ -4,11 +4,11 @@
     <property name="echo.separator" value="****************************"/>
     <property name="message" value="'Updating CV.'"/>
     <property name="displayReferences">false</property>
-    <property name="displayMonth">true</property>
     <property name="displayDesc">false</property>
     <property name="source.dir" value="data"/>
 
     <property name="out.dir" value="out"/>
+    <property name="fo.dir" value="${basedir}"/>
 
 
     <!--Files-->
@@ -23,7 +23,7 @@
         <format property="date" pattern="yyyy-MM-dd" locale="en"/>
     </tstamp>
 
-    <property name="fop.home" value="utilities/fop-2.0"/>
+    <property name="fop.home" value="${basedir}/utilities/fop-2.0"/>
 
     <taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
         <classpath>
@@ -55,7 +55,7 @@
         <echo message="Creating XHTML5 version of the CV"/>
         <java classname="net.sf.saxon.Transform" classpath="utilities/saxon9he.jar">
             <arg value="-s:${source.cv}"/>
-            <arg value="-xsl:xsl/cv-to-xhtml.xsl"/>
+            <arg value="-xsl:${basedir}/xsl/cv-to-xhtml.xsl"/>
             <arg value="-o:${html}"/>
             <arg value="date=${date}"/>
             <arg value="--suppressXsltNamespaceCheck:on"/>
@@ -67,7 +67,7 @@
         <echo message="Creating TEI version of CV"/>
         <java classname="net.sf.saxon.Transform" classpath="utilities/saxon9he.jar">
             <arg value="-s:${source.cv}"/>
-            <arg value="-xsl:xsl/cv-to-tei.xsl"/>
+            <arg value="-xsl:${basedir}/xsl/cv-to-tei.xsl"/>
             <arg value="-o:${tei}"/>
             <arg value="date=${date}"/>
             <arg value="--suppressXsltNamespaceCheck:on"/>
@@ -79,16 +79,16 @@
         <echo message="Creating PDF version of the CV"/>
         <java classname="net.sf.saxon.Transform" classpath="utilities/saxon9he.jar">
             <arg value="-s:${source.cv}"/>
-            <arg value="-xsl:xsl/cv-to-pdf.xsl"/>
+            <arg value="-xsl:${basedir}/xsl/cv-to-pdf.xsl"/>
             <arg value="-o:${fo}"/>
             <arg value="date=${date}"/>
             <arg value="displayReferences=${displayReferences}"/>
-            <arg value="displayMonth=${displayMonth}"/>
             <arg value="displayDesc=${displayDesc}"/>
             <arg value="--suppressXsltNamespaceCheck:on"/>
         </java>
-        <fop format="application/pdf" fofile="${fo}" outfile="${pdf}"
-            userconfig="utilities/fop-2.0/conf/fop.xconf"/>
+        <property name="foPath" location="${fo}"/>
+        <fop format="application/pdf" fofile="${foPath}" outfile="${pdf}"
+            userconfig="${basedir}/utilities/fop-2.0/conf/fop.xconf"/>
     </target>
 
 
