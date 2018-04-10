@@ -3,8 +3,8 @@
 
     <property name="echo.separator" value="****************************"/>
     <property name="message" value="'Updating CV.'"/>
-    <property name="displayReferences">false</property>
-    <property name="displayDesc">false</property>
+    <property name="displayReferences">true</property>
+    <property name="displayDesc">true</property>
     <property name="source.dir" value="data"/>
 
     <property name="out.dir" value="out"/>
@@ -12,7 +12,7 @@
 
 
     <!--Files-->
-    <property name="source.cv" value="${source.dir}/CV.xml"/>
+    <property name="source.cv" value="${source.dir}/elspeth_cv.xml"/>
     <basename property="fname" file="${source.cv}" suffix="xml"/>
     <property name="html" value="${out.dir}/${fname}.html"/>
     <property name="tei" value="${out.dir}/${fname}.xml"/>

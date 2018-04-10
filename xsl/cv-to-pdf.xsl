@@ -51,6 +51,7 @@
                     </rdf:RDF>
                 </x:xmpmeta>
             </declarations>
+            
             <page-sequence master-reference="A4-portrait">
                 <flow flow-name="xsl-region-body">
                     <xsl:apply-templates/>
@@ -81,7 +82,8 @@
             </xsl:otherwise>
         </xsl:choose>
         <!--Little HR-->
-       <block><leader leader-pattern="rule" leader-length="100%" rule-style="solid" rule-thickness=".5pt"/></block>
+        <block padding="1em 0 0 0"/>
+<!--       <block><leader leader-pattern="rule" leader-length="100%" rule-style="solid" rule-thickness=".5pt"/></block>-->
     </xsl:template>
     
     <!--Suppress, if necessary-->
@@ -91,9 +93,10 @@
     <!--Each section-->
     
     <xsl:template match="head">
-        <block font-weight="600" font-size="16pt" padding=".5em 0" keep-with-next.within-page="always">
+        <block font-weight="600" font-size="16pt" padding=".6em 0 0 0" keep-with-next.within-page="always">
             <xsl:value-of select="upper-case(.)"/>
         </block>
+        <block padding="-.75em 0 0 0" margin-bottom=".5em" keep-with-next.within-page="always"><leader leader-pattern="rule" leader-length="97.5%" rule-style="solid" rule-thickness=".5pt"/></block>
     </xsl:template>
     
     <!--Make these tables-->
@@ -246,6 +249,7 @@
     </xsl:template>-->
     
     <xsl:template match="ref[@target]">
+        <xsl:variable name="dest" select="if (@type='local') then replace(concat('https://joeytakeda.github.io/',@target),'\.\./','') else @target"/>
         <xsl:choose>
 <!--            When's a string referring to me, then bold it (usually in presentations/conferences)-->
             <xsl:when test="@target='#me'">
@@ -253,9 +257,13 @@
                     <xsl:apply-templates/>
                 </inline>
             </xsl:when>
+            <xsl:when test="ancestor::workplace">
+                <!--Don't make workplace links in PDFs-->
+                <xsl:apply-templates/>
+            </xsl:when>
 <!--            Otherwise, link outwards. -->
             <xsl:otherwise>
-                <basic-link external-destination="{if (@type='local') then replace(concat('https://joeytakeda.github.io/',@target),'\.\./','') else @target}" text-decoration="underline">
+                <basic-link external-destination="{$dest}" text-decoration="underline">
                     <xsl:apply-templates/>
                 </basic-link>
             </xsl:otherwise>

@@ -12,6 +12,12 @@
       <element name="email">
         <text/>
       </element>
+      <optional>
+        <element name="phone">
+          <text/>
+        </element>
+      </optional>
+      <interleave>
       <element name="education">
         <ref name="head"/>
         <oneOrMore>
@@ -93,10 +99,13 @@
           <ref name="job"/>
         </oneOrMore>
       </element>
+      </interleave>
       <element name="references">
         <ref name="head"/>
       </element>
+
     </element>
+
   </start>
   <define name="title">
     <element name="title">
