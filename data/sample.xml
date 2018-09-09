@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../schema/CV.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="../schema/CV.rng" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<cv xmlns="http://joeytakeda.github.io/ns/">
+   <name>John Smith</name>
+   <email>jsmith@sample.com</email>
+    <website>mywebsite.com</website>
+    <section type="education">
+        <head>Education</head>
+        <listDegrees>
+            <degree from="1998" to="2002">
+                <name>Bachelor of Science</name>
+                <discipline>Bioengineering</discipline>
+                <institution>Harvard</institution>
+            </degree>
+        </listDegrees>
+    </section>
+</cv>
