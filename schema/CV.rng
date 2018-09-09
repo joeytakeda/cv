@@ -1,241 +1,381 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--Initially generated automatically by oXygen from example; subsequently edited by hand-->
-<grammar ns="http://github.com/joeytakeda/cv/ns" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <start>
-    <element name="cv">
+<?xml version="1.0" encoding="utf-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:tei="http://www.tei-c.org/ns/1.0"
+         xmlns:teix="http://www.tei-c.org/ns/Examples"
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+         ns="http://joeytakeda.github.io/ns/"><!--
+Schema generated from ODD source 2018-09-09T00:51:57Z. .
+TEI Edition: Version 3.3.0. Last updated on
+	31st January 2018, revision f4d8439
+TEI Edition Location: http://www.tei-c.org/Vault/P5/Version 3.3.0/
+  
+--><!---->
+   <sch:ns xmlns:sch="http://purl.oclc.org/dsdl/schematron"
+           prefix="tei"
+           uri="http://www.tei-c.org/ns/1.0"/>
+   <define name="cv.mixedContent">
+      <zeroOrMore>
+         <choice>
+            <text/>
+            <ref name="title"/>
+            <ref name="ref"/>
+         </choice>
+      </zeroOrMore>
+   </define>
+   <define name="cv">
+      <element name="cv">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">root CV element; contains a cv.</a:documentation>
+         <ref name="name"/>
+         <ref name="email"/>
+         <optional>
+            <ref name="phone"/>
+         </optional>
+         <ref name="website"/>
+         <oneOrMore>
+            <ref name="section"/>
+         </oneOrMore>
+      </element>
+   </define>
+   <define name="name">
       <element name="name">
-        <attribute name="id">
-          <data type="NCName"/>
-        </attribute>
-        <text/>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.global.attributes"/>
+         <empty/>
       </element>
+   </define>
+   <define name="email">
       <element name="email">
-        <text/>
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.global.attributes"/>
+         <empty/>
       </element>
-      <optional>
-        <element name="phone">
-          <text/>
-        </element>
-      </optional>
-      <interleave>
-      <element name="education">
-        <ref name="head"/>
-        <oneOrMore>
-          <element name="degree">
-            <attribute name="from">
-              <data type="integer"/>
-            </attribute>
-            <optional>
-              <attribute name="to">
-                <data type="integer"/>
-              </attribute>
-            </optional>
-            <element name="degree_name">
-              <text/>
-            </element>
-            <element name="discipline">
-              <text/>
-            </element>
-            <element name="institution">
-              <text/>
-            </element>
-          </element>
-        </oneOrMore>
+   </define>
+   <define name="phone">
+      <element name="phone">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.global.attributes"/>
+         <empty/>
       </element>
-      <element name="awards">
-        <ref name="head"/>
-        <oneOrMore>
-          <element name="award">
-            <attribute name="when">
-              <data type="integer"/>
-            </attribute>
-            <text/>
-          </element>
-        </oneOrMore>
+   </define>
+   <define name="website">
+      <element name="website">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.global.attributes"/>
+         <empty/>
       </element>
-      <element name="publications">
-        <ref name="head"/>
-        <oneOrMore>
-          <element name="publication">
-            <oneOrMore>
-              <choice>
-                <text/>
-                <ref name="ref"/>
-                <ref name="title"/>
-              </choice>
-            </oneOrMore>
-          </element>
-        </oneOrMore>
+   </define>
+   <define name="section">
+      <element name="section">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(a section of the CV.) an arbitrary section</a:documentation>
+         <ref name="head"/>
+         <optional>
+            <ref name="cv.model.listLike"/>
+         </optional>
+         <attribute name="type">
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         </attribute>
+         <empty/>
       </element>
-      <element name="conferences">
-        <ref name="head"/>
-        <oneOrMore>
-          <element name="conference">
-            <oneOrMore>
-              <choice>
-                <text/>
-                <ref name="ref"/>
-                <ref name="title"/>
-              </choice>
-            </oneOrMore>
-          </element>
-        </oneOrMore>
+   </define>
+   <define name="head">
+      <element name="head">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <text/>
       </element>
-      <element name="teaching">
-        <ref name="head"/>
-        <oneOrMore>
-          <ref name="job"/>
-        </oneOrMore>
+   </define>
+   <define name="degree">
+      <element name="degree">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="name"/>
+         <ref name="discipline"/>
+         <ref name="institution"/>
+         <ref name="cv.att.datable.attributes"/>
+         <empty/>
       </element>
-      <element name="employment">
-        <ref name="head"/>
-        <oneOrMore>
-          <ref name="job"/>
-        </oneOrMore>
+   </define>
+   <define name="discipline">
+      <element name="discipline">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <text/>
       </element>
-      <element name="service">
-        <ref name="head"/>
-        <oneOrMore>
-          <ref name="job"/>
-        </oneOrMore>
+   </define>
+   <define name="institution">
+      <element name="institution">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <text/>
       </element>
-      </interleave>
-      <element name="references">
-        <ref name="head"/>
+   </define>
+   <define name="listJobs">
+      <element name="listJobs">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <oneOrMore>
+            <ref name="job"/>
+         </oneOrMore>
       </element>
-
-    </element>
-
-  </start>
-  <define name="title">
-    <element name="title">
-      <optional>
-        <attribute name="level">
-          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">indicates the bibliographic level for a title. Taken from the TEI P5 Guidelines.</a:documentation>
-          <choice>
-            <value>a</value>
-            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(analytic) the title applies to an analytic item, such as an article, poem, or other work published as part of a larger item.</a:documentation>
-            <value>m</value>
-            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(monographic) the title applies to a monograph such as a book or other item considered to be a distinct publication, including single volumes of multi-volume works</a:documentation>
-            <value>j</value>
-            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(journal) the title applies to any serial or periodical publication such as a journal, magazine, or newspaper</a:documentation>
-            <value>s</value>
-            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(series) the title applies to a series of otherwise distinct publications such as a collection</a:documentation>
-            <value>u</value>
-            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(unpublished) the title applies to any unpublished material (including theses and dissertations unless published by a commercial press)</a:documentation>
-          </choice>
-        </attribute>
-      </optional>
-      <oneOrMore>
-        <choice>
-          <text/>
-          <ref name="ref"/>
-        </choice>
-      </oneOrMore>
-    </element>
-  </define>
-  <define name="head">
-    <element name="head">
-      <text/>
-    </element>
-  </define>
-  <define name="ref">
-    <element name="ref">
-      <attribute name="target">
-        <data type="anyURI"/>
-      </attribute>
-      <optional>
-        <attribute name="type">
-          <data type="NCName"/>
-        </attribute>
-      </optional>
-      <data type="anyURI"/>
-    </element>
-  </define>
-  <define name="job">
-    <element name="job">
-      <optional>
-        <attribute name="from">
-          <choice>
-            <data type="date"/>
-            <data type="gYear"/>
-            <data type="gMonth"/>
-            <data type="gDay"/>
-            <data type="gYearMonth"/>
-            <data type="gMonthDay"/>
-            <data type="time"/>
-            <data type="dateTime"/>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="to">
-          <choice>
-            <data type="date"/>
-            <data type="gYear"/>
-            <data type="gMonth"/>
-            <data type="gDay"/>
-            <data type="gYearMonth"/>
-            <data type="gMonthDay"/>
-            <data type="time"/>
-            <data type="dateTime"/>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="when">
-          <choice>
-            <data type="date"/>
-            <data type="gYear"/>
-            <data type="gMonth"/>
-            <data type="gDay"/>
-            <data type="gYearMonth"/>
-            <data type="gMonthDay"/>
-            <data type="time"/>
-            <data type="dateTime"/>
-          </choice>
-        </attribute>
-      </optional>
-      <choice>
-        <group>
-          <element name="job_title">
-            <text/>
-          </element>
-          <oneOrMore>
-            <element name="workplace">
-              <oneOrMore>
-                <choice>
-                  <text/>
-                  <ref name="title"/>
-                </choice>
-              </oneOrMore>
-            </element>
-          </oneOrMore>
-        </group>
-        <group>
-          <element name="role">
-            <text/>
-          </element>
-          <element name="class">
-            <text/>
-          </element>
-        </group>
-      </choice>
-      <optional>
-        <element name="supervisor">
-          <text/>
-        </element>
-      </optional>
-      <optional>
-        <element name="desc">
-          <oneOrMore>
+   </define>
+   <define name="job">
+      <element name="job">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <zeroOrMore>
             <choice>
-              <text/>
-              <ref name="title"/>
+               <ref name="role"/>
+               <ref name="class"/>
+               <ref name="supervisor"/>
+               <ref name="desc"/>
+               <ref name="job_title"/>
+               <ref name="workplace"/>
             </choice>
-          </oneOrMore>
-        </element>
+         </zeroOrMore>
+         <sch:pattern xmlns:xi="http://www.w3.org/2001/XInclude"
+                      xmlns:svg="http://www.w3.org/2000/svg"
+                      xmlns:math="http://www.w3.org/1998/Math/MathML"
+                      xmlns="http://www.tei-c.org/ns/1.0"
+                      xmlns:jt="http://joeytakeda.github.io/ns/"
+                      xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+                <sch:rule context="jt:job[@from]| jt:job[@to]">
+                  <sch:let name="fromTokens" value="tokenize(@from,'-')"/>
+                  <sch:assert test="every $q in  (@from | @to) satisfies count(tokenize($q,'-')) gt 1">
+                    ERROR: All job dates should include the month.
+                  </sch:assert>
+                </sch:rule>
+              </sch:pattern>
+         <ref name="cv.att.datable.attributes"/>
+         <empty/>
+      </element>
+   </define>
+   <define name="role">
+      <element name="role">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+      </element>
+   </define>
+   <define name="class">
+      <element name="class">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+      </element>
+   </define>
+   <define name="supervisor">
+      <element name="supervisor">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+      </element>
+   </define>
+   <define name="desc">
+      <element name="desc">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+      </element>
+   </define>
+   <define name="title">
+      <element name="title">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <optional>
+            <attribute name="level">
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+               <choice>
+                  <value>m</value>
+                  <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+                  <value>a</value>
+                  <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+               </choice>
+            </attribute>
+         </optional>
+         <empty/>
+      </element>
+   </define>
+   <define name="listReferences">
+      <element name="listReferences">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <zeroOrMore>
+            <ref name="reference"/>
+         </zeroOrMore>
+      </element>
+   </define>
+   <define name="reference">
+      <element name="reference">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+      </element>
+   </define>
+   <define name="job_title">
+      <element name="job_title">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+      </element>
+   </define>
+   <define name="workplace">
+      <element name="workplace">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+      </element>
+   </define>
+   <define name="ref">
+      <element name="ref">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <optional>
+            <attribute name="target">
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+               <data type="anyURI"/>
+            </attribute>
+         </optional>
+         <empty/>
+      </element>
+   </define>
+   <define name="listAwards">
+      <element name="listAwards">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <oneOrMore>
+            <ref name="award"/>
+         </oneOrMore>
+      </element>
+   </define>
+   <define name="listDegrees">
+      <element name="listDegrees">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <oneOrMore>
+            <ref name="degree"/>
+         </oneOrMore>
+      </element>
+   </define>
+   <define name="listPublications">
+      <element name="listPublications">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <oneOrMore>
+            <ref name="publication"/>
+         </oneOrMore>
+      </element>
+   </define>
+   <define name="listConferences">
+      <element name="listConferences">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <oneOrMore>
+            <ref name="conference"/>
+         </oneOrMore>
+      </element>
+   </define>
+   <define name="conference">
+      <element name="conference">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.datable.attributes"/>
+         <empty/>
+      </element>
+   </define>
+   <define name="publication">
+      <element name="publication">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.datable.attributes"/>
+         <empty/>
+      </element>
+   </define>
+   <define name="award">
+      <element name="award">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.datable.attributes"/>
+         <empty/>
+      </element>
+   </define>
+   <define name="cv.att.datable.attributes">
+      <ref name="cv.att.datable.attribute.to"/>
+      <ref name="cv.att.datable.attribute.from"/>
+      <ref name="cv.att.datable.attribute.when"/>
+   </define>
+   <define name="cv.att.datable.attribute.to">
+      <optional>
+         <attribute name="to">
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+            <choice>
+               <data type="date"/>
+               <data type="gYear"/>
+               <data type="gMonth"/>
+               <data type="gDay"/>
+               <data type="gYearMonth"/>
+               <data type="gMonthDay"/>
+               <data type="time"/>
+               <data type="dateTime"/>
+            </choice>
+         </attribute>
       </optional>
-    </element>
-  </define>
+   </define>
+   <define name="cv.att.datable.attribute.from">
+      <optional>
+         <attribute name="from">
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+            <choice>
+               <data type="date"/>
+               <data type="gYear"/>
+               <data type="gMonth"/>
+               <data type="gDay"/>
+               <data type="gYearMonth"/>
+               <data type="gMonthDay"/>
+               <data type="time"/>
+               <data type="dateTime"/>
+            </choice>
+         </attribute>
+      </optional>
+   </define>
+   <define name="cv.att.datable.attribute.when">
+      <optional>
+         <attribute name="when">
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+            <choice>
+               <data type="date"/>
+               <data type="gYear"/>
+               <data type="gMonth"/>
+               <data type="gDay"/>
+               <data type="gYearMonth"/>
+               <data type="gMonthDay"/>
+               <data type="time"/>
+               <data type="dateTime"/>
+            </choice>
+         </attribute>
+      </optional>
+   </define>
+   <define name="cv.att.global.attributes">
+      <ref name="cv.att.global.attribute.xmlid"/>
+      <ref name="cv.att.global.attribute.n"/>
+   </define>
+   <define name="cv.att.global.attribute.xmlid">
+      <optional>
+         <attribute name="xml:id">
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+            <data type="ID"/>
+         </attribute>
+      </optional>
+   </define>
+   <define name="cv.att.global.attribute.n">
+      <optional>
+         <attribute name="n">
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         </attribute>
+      </optional>
+   </define>
+   <define name="cv.model.listLike">
+      <choice>
+         <ref name="listJobs"/>
+         <ref name="listReferences"/>
+         <ref name="listAwards"/>
+         <ref name="listDegrees"/>
+         <ref name="listPublications"/>
+         <ref name="listConferences"/>
+      </choice>
+   </define>
+   <start>
+      <choice>
+         <ref name="cv"/>
+      </choice>
+   </start>
+   <ns xmlns="http://purl.oclc.org/dsdl/schematron"
+       prefix="jt"
+       uri="http://joeytakeda.github.io/ns/"/>
 </grammar>

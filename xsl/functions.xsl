@@ -3,7 +3,7 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:math="http://www.w3.org/2005/xpath-functions/math"
     exclude-result-prefixes="xs math"
-    xmlns:cv="http://github.com/joeytakeda/cv/ns"
+    xmlns:cv="http://joeytakeda.github.io/ns/"
     version="3.0">
 
     

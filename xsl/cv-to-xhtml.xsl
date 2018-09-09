@@ -5,10 +5,10 @@
     exclude-result-prefixes="#all"
     version="2.0"
     xmlns="http://www.w3.org/1999/xhtml"
-    xpath-default-namespace="http://github.com/joeytakeda/cv/ns"
+    xpath-default-namespace="http://joeytakeda.github.io/ns/"
     xmlns:hcmc="http://hcmc.uvic.ca/ns"
     xmlns:saxon="http://saxon.sf.net/"
-    xmlns:cv="http://github.com/joeytakeda/cv/ns"
+    xmlns:cv="http://joeytakeda.github.io/ns/"
     >
     
     <xsl:include href="functions.xsl"/>
@@ -37,24 +37,30 @@
 <!--    We manipulate those throughout.-->
     <xsl:template match="cv/email | cv/name"/>
     
-    <xsl:template match="education|awards|publications|conferences|teaching|employment|service|conferences">
+    <xsl:template match="section">
         <div class="section">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
     
-    <xsl:template match="references">
-        <div class="section">
-            <xsl:apply-templates select="title"/>
-            <p>References available upon request.</p>
-        </div>
+    <xsl:template match="listReferences">
+        <xsl:choose>
+            <xsl:when test="reference">
+                <xsl:apply-templates/>
+            </xsl:when>
+            <xsl:otherwise>
+                <p>References available upon request.</p>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
+    
         
     <xsl:template match="desc">
         <div class="desc">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
+    
     <xsl:template match="head">
         <h2><xsl:value-of select="upper-case(.)"/></h2>
         <hr/>
@@ -66,6 +72,7 @@
         </div>
     </xsl:template>
     
+    
     <xsl:template match="supervisor">
         <div class="desc">
             Supervisor: <xsl:apply-templates/>
@@ -75,8 +82,7 @@
 <!--    Suppress-->
     <xsl:template match="job/desc"/>
         
-    
-    
+        
     <xsl:template match="publication | job | reference |degree | conference">
         <div class="item">
             <xsl:apply-templates select="@*"/>

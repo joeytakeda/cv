@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:svg="http://www.w3.org/2000/svg"
+  xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns="http://www.tei-c.org/ns/1.0"
+  xmlns:jt="http://joeytakeda.github.io/ns/" xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>ODD Specification for the CV Builder</title>
+      </titleStmt>
+      <publicationStmt>
+        <p>Publication Information</p>
+      </publicationStmt>
+      <sourceDesc>
+        <p>Born Digital</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <schemaSpec ident="cv" 
+        start="cv"
+        ns="http://joeytakeda.github.io/ns/"
+     >
+        
+        <elementSpec ident="cv" module="cv">
+          <desc>root CV element; contains a cv.</desc>
+          <content>
+            <elementRef key="name"/>
+            <elementRef key="email"/>
+            <elementRef key="phone" minOccurs="0"/>
+            <elementRef key="website"/>
+            <elementRef key="section" minOccurs="1" maxOccurs="unbounded"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="name">
+          <classes>
+            <memberOf key="cv.att.global"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        <elementSpec ident="email">
+          <classes>
+            <memberOf key="cv.att.global"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        <elementSpec ident="phone">
+          <classes>
+            <memberOf key="cv.att.global"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        <elementSpec ident="website">
+          <classes>
+            <memberOf key="cv.att.global"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+          
+        
+        
+        <elementSpec ident="section" module="cv">
+          <desc>an arbitrary section</desc>
+          <gloss>a section of the CV.</gloss>
+          <content>
+            <elementRef key="head"/>
+            <classRef key="cv.model.listLike" minOccurs="0" maxOccurs="1"/>
+          </content>
+          <attList>
+            <attDef ident="type" usage="req">
+              <datatype>
+                <dataRef key="teidata.enumerated"/>
+              </datatype>
+              <valList>
+                <valItem ident="education"/>
+                <valItem ident="awards"/>
+                <valItem ident="publications"/>
+                <valItem ident="conferences"/>
+                <valItem ident="teaching"/>
+                <valItem ident="employment"/>
+                <valItem ident="service"/>
+                <valItem ident="references"/>
+              </valList>
+            </attDef>
+          </attList>
+          
+        </elementSpec>
+        
+        <elementSpec ident="head">
+          <content>
+            <textNode/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="degree">
+          <classes>
+            <memberOf key="cv.att.datable"/>
+          </classes>
+          <content>
+            <elementRef key="name"/>
+            <elementRef key="discipline"/>
+            <elementRef key="institution"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="discipline">
+          <content>
+            <textNode/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="institution">
+          <content>
+            <textNode/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="listJobs">
+          <classes>
+            <memberOf key="cv.model.listLike"/>
+          </classes>
+          <content>
+            <elementRef key="job" minOccurs="1" maxOccurs="unbounded"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="job">
+          <classes>
+            <memberOf key="cv.att.datable"/>
+          </classes>
+          <content>
+            <alternate minOccurs="0" maxOccurs="unbounded">
+              <elementRef key="role"/>
+              <elementRef key="class"/>
+              <elementRef key="supervisor"/>
+              <elementRef key="desc"/>
+              <elementRef key="job_title"/>
+              <elementRef key="workplace"/>
+            </alternate>
+          </content>
+          <constraintSpec ident="jobsNeedMonth" scheme="schematron">
+            <constraint>
+              <sch:pattern>
+                <sch:rule context="jt:job[@from]| jt:job[@to]">
+                  <sch:let name="fromTokens" value="tokenize(@from,'-')"/>
+                  <sch:assert test="every $q in  (@from | @to) satisfies count(tokenize($q,'-')) gt 1">
+                    ERROR: All job dates should include the month.
+                  </sch:assert>
+                </sch:rule>
+              </sch:pattern>
+            </constraint>
+          </constraintSpec>
+        </elementSpec>
+        
+        <elementSpec ident="role" module="cv">
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+
+        <elementSpec ident="class" module="cv">
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        <elementSpec ident="supervisor" module="cv">
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        <elementSpec ident="desc" module="cv">
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="title">
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+          <attList>
+            <attDef ident="level">
+              <valList type="closed">
+                <valItem ident="m"/>
+                <valItem ident="a"/>
+              </valList>
+            </attDef>
+          </attList>
+        </elementSpec>
+        
+        <elementSpec ident="listReferences">
+          <classes>
+            <memberOf key="cv.model.listLike"/>
+          </classes>
+          <content>
+            <elementRef key="reference" minOccurs="0" maxOccurs="unbounded"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="reference">
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="job_title" module="cv">
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        <elementSpec ident="workplace" module="cv">
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        
+        
+        
+        <elementSpec ident="ref">
+          <classes>
+            <memberOf key="cv.mixedContent"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+          <attList>
+            <attDef ident="target">
+              <datatype>
+                <dataRef name="anyURI"/>
+              </datatype>
+            </attDef>
+          </attList>
+          
+        </elementSpec>
+        
+        <elementSpec ident="listAwards">
+          <classes>
+            <memberOf key="cv.model.listLike"/>
+          </classes>
+          <content>
+            <elementRef key="award" minOccurs="1" maxOccurs="unbounded"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="listDegrees">
+          <classes>
+            <memberOf key="cv.model.listLike"/>
+          </classes>
+          <content>
+            <elementRef key="degree" minOccurs="1" maxOccurs="unbounded"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="listPublications">
+          <classes>
+            <memberOf key="cv.model.listLike"/>
+          </classes>
+          <content>
+            <elementRef key="publication" minOccurs="1" maxOccurs="unbounded"/>
+          </content>
+        </elementSpec>
+        
+        
+        <elementSpec ident="listConferences">
+          <classes>
+            <memberOf key="cv.model.listLike"/>
+          </classes>
+          <content>
+            <elementRef key="conference" minOccurs="1" maxOccurs="unbounded"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="conference">
+          <classes>
+            <memberOf key="cv.att.datable"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="publication">
+          <classes>
+            <memberOf key="cv.att.datable"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="award">
+          <classes>
+            <memberOf key="cv.att.datable"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+
+        
+        <classSpec ident="cv.att.datable" type="atts">
+          <attList>
+            <attDef ident="to">
+              <datatype><dataRef key="cvdata.temporal.w3c"/></datatype>
+            </attDef>
+            <attDef ident="from">
+              <datatype><dataRef key="cvdata.temporal.w3c"/></datatype>
+            </attDef>
+            <attDef ident="when">
+              <datatype><dataRef key="cvdata.temporal.w3c"/></datatype>
+            </attDef>
+          </attList>
+        </classSpec>
+ 
+        <dataSpec ident="cvdata.temporal.w3c">
+          <content>
+            <alternate>
+              <dataRef name="date"/>
+              <dataRef name="gYear"/>
+              <dataRef name="gMonth"/>
+              <dataRef name="gDay"/>
+              <dataRef name="gYearMonth"/>
+              <dataRef name="gMonthDay"/>
+              <dataRef name="time"/>
+              <dataRef name="dateTime"/>
+            </alternate>
+          </content>
+        </dataSpec>
+     
+        
+        <macroSpec ident="cv.mixedContent" module="cv">
+          <content>
+            <alternate minOccurs="0" maxOccurs="unbounded">
+              <textNode/>
+              <elementRef key="title"/>
+              <elementRef key="ref"/>
+            </alternate>
+          </content>
+        </macroSpec>
+        
+        <classSpec ident="cv.att.global" module="cv" type="atts">
+          <attList>
+            <attDef ident="xml:id">
+              <datatype>
+                <dataRef name="ID"/>
+              </datatype>
+            </attDef>
+            <attDef ident="n">
+              <datatype>
+                <dataRef key="teidata.text"/>
+              </datatype>
+            </attDef>
+          </attList>
+        </classSpec>
+        
+        <classSpec ident="cv.model.listLike" type="model" module="cv">
+          <desc>groups elements that are like lists</desc>
+          <classes>
+            <memberOf key="cv.att.global"/>
+          </classes>
+        </classSpec>
+        
+        <constraintSpec ident="addNs" scheme="schematron">
+          <constraint>
+            <sch:ns uri="http://joeytakeda.github.io/ns/" prefix="jt"/>
+          </constraint>
+        </constraintSpec>
+
+        
+        <moduleSpec ident="cv"/>
+      </schemaSpec>
+    </body>
+  </text>
+</TEI>

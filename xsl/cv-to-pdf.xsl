@@ -2,10 +2,10 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:fo="http://www.w3.org/1999/XSL/Format"
-    xmlns:cv="http://github.com/joeytakeda/cv/ns"
+    xmlns:cv="http://joeytakeda.github.io/ns/"
     exclude-result-prefixes="xs"
     xmlns="http://www.w3.org/1999/XSL/Format"
-    xpath-default-namespace="http://github.com/joeytakeda/cv/ns"
+    xpath-default-namespace="http://joeytakeda.github.io/ns/"
     version="2.0">
     
     <xsl:include href="functions.xsl"/>
@@ -90,6 +90,14 @@
     <xsl:template match="cv/phone"/>
     
     
+    <xsl:template match="section">
+        <block>
+            <xsl:apply-templates/>
+        </block>
+    </xsl:template>
+    
+    
+    
     <!--Each section-->
     
     <xsl:template match="head">
@@ -100,9 +108,7 @@
     </xsl:template>
     
     <!--Make these tables-->
-    <xsl:template match="education | awards | teaching | service | employment">
-        <block>
-        <xsl:apply-templates select="head"/>
+    <xsl:template match="*[self::listDegrees | self::listAwards | self::listJobs]">
         <!--Switch for if the dates should be on the left 
             or right-->
         <xsl:variable name="dateCol" select="2"/>
@@ -121,12 +127,11 @@
             <table-column column-number="{$dateCol}" column-width="{$dateColWidth}%"/>
             <table-column column-number="{if ($dateCol=1) then 2 else 1}" column-width="{98-$dateColWidth}%"/>
             <table-body>
-                <xsl:apply-templates select="award | degree | conference | job">
+                <xsl:apply-templates select="node()[not(self::head)]">
                     <xsl:with-param name="dateCol" select="$dateCol"/>
                 </xsl:apply-templates>
             </table-body>
         </table>
-        </block>
     </xsl:template>
     
    
@@ -175,21 +180,15 @@
         </table-row>
     </xsl:template>
     
-    <xsl:template match="degree_name | discipline | institution | class | role | instructor | workplace">
+    <xsl:template match="degree/name | discipline | institution | class | role | instructor | workplace">
         <block>
             <xsl:apply-templates/>
         </block>
     </xsl:template>
     
-    <xsl:template match="employment/job/job_title">
+    <xsl:template match="job_title">
         <block>
          <!--   <xsl:text>Job title: </xsl:text>--><xsl:apply-templates/>
-        </block>
-    </xsl:template>
-    
-    <xsl:template match="service/job/job_title">
-        <block>
-            <xsl:apply-templates/>
         </block>
     </xsl:template>
     
@@ -208,7 +207,7 @@
     </xsl:template>
     
     <!--    Publications and conferences are formatted differently-->
-    <xsl:template match="publications | conferences">
+    <xsl:template match="listPublications | listConferences">
         <block>
             <xsl:apply-templates/>
         </block>
@@ -226,27 +225,7 @@
         </inline>
     </xsl:template>
     
-    
-   <!-- <xsl:template match="@when">
-        <xsl:value-of select="jt:yearFromDate(.)"/>
-    </xsl:template>
-    
-    <xsl:template match="@from">
-        <xsl:value-of select="jt:yearFromDate(.)"/>
-        <xsl:if test="not(jt:yearFromDate(parent::*/@to) = jt:yearFromDate(.))">
-            <xsl:text>–</xsl:text>
-        </xsl:if>
-        <xsl:if test="not(parent::*/@to)">
-            <xsl:text>present</xsl:text>
-        </xsl:if>
-    </xsl:template>
-    
-    <xsl:template match="@to">
-        <xsl:variable name="preceding-from" select="parent::*/@from"/>
-        <xsl:if test="not(jt:yearFromDate($preceding-from)=jt:yearFromDate(.))">
-            <xsl:value-of select="jt:yearFromDate(.)"/>
-        </xsl:if>
-    </xsl:template>-->
+
     
     <xsl:template match="ref[@target]">
         <xsl:variable name="dest" select="if (@type='local') then replace(concat('https://joeytakeda.github.io/',@target),'\.\./','') else @target"/>
@@ -272,19 +251,20 @@
     </xsl:template>
     
     
-    <xsl:template match="references">
+    <xsl:template match="listReferences">
         <block>
             <xsl:apply-templates select="head"/>
             <xsl:choose>
                 <xsl:when test="$displayReferences='true'">
-                    <xsl:for-each select="reference">
+                    <!--Then we'll import them externally, I think-->
+                    <!--<xsl:for-each select="reference">
                         <block padding-top=".6em">
                             <block><xsl:value-of select="name"/></block>
                             <block><xsl:value-of select="role"/></block>
                             <block><xsl:value-of select="email"/></block>
                             <block><xsl:value-of select="phone"/></block>
                         </block>
-                    </xsl:for-each>
+                    </xsl:for-each>-->
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:text>References available upon request.</xsl:text>

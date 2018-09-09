@@ -6,10 +6,10 @@
     version="2.0"
     xmlns="http://www.tei-c.org/ns/1.0"
     xmlns:tei="http://www.tei-c.org/ns/1.0"
-    xpath-default-namespace="http://github.com/joeytakeda/cv/ns"
+    xpath-default-namespace="http://joeytakeda.github.io/ns/"
     xmlns:hcmc="http://hcmc.uvic.ca/ns"
     xmlns:saxon="http://saxon.sf.net/"
-    xmlns:cv="http://github.com/joeytakeda/cv/ns"
+    xmlns:cv="http://joeytakeda.github.io/ns/"
     >
     
     <xsl:include href="functions.xsl"/>
@@ -24,20 +24,24 @@
             <teiHeader>
                 <fileDesc>
                     <titleStmt>
-                        <title>Joseph Takeda's CV</title>
+                        <title><xsl:value-of select="//cv/name"/>'s Curriculum Vitae</title>
                     </titleStmt>
                     <publicationStmt>
-                        <p>Published on <ref target="http://joeytakeda.github.io">joeytakeda.github.io</ref>. Last generated <xsl:value-of select="$date"/>.</p>
+                        <p> Last generated <xsl:value-of select="$date"/>.</p>
                     </publicationStmt>
                     <sourceDesc>
-                        <p>Born digital; source: <ref target="../xml/CV.xml">CV.xml</ref></p>
+                        <p>Born digital, but generated using XSLT.</p>
                     </sourceDesc>
                 </fileDesc>
                 <profileDesc>
                     <particDesc>
                         <person xml:id="me">
                             <persName>
-                                <name>Joseph Takeda</name>
+                                <name><xsl:value-of select="//cv/name"/></name>
+                                <email><xsl:value-of select="email"/></email>
+                                <xsl:if test="website">
+                                    <ptr target="{website}"/>
+                                </xsl:if>
                             </persName>
                         </person>
                     </particDesc>
@@ -47,13 +51,7 @@
                 <body>
                     <listPerson>
                         <person sameAs="#me">
-                            <persName>
-                                <surname>Takeda</surname>
-                                <forename>Joseph</forename>
-                                <forename>Joey</forename>
-                                <email><xsl:value-of select="email"/></email>
-                            </persName>
-                            <xsl:apply-templates/>
+                            <xsl:apply-templates select="//section"/>
                         </person>
                     </listPerson>
                 </body>
@@ -61,79 +59,69 @@
         </TEI>
     </xsl:template>
     
-  
-    
-    <!-- Education -->
-    <xsl:template match="education">
-       <xsl:apply-templates/>
+    <xsl:template match="section">
+        <xsl:apply-templates select="node()[not(self::head)]"/>
     </xsl:template>
     
     <xsl:template match="degree">
-        <education>
-            <xsl:copy-of select="@to | @from | @when"/>
-            <xsl:value-of select="degree_name"/> in <xsl:value-of select="discipline"/> at <placeName><xsl:value-of select="institution"/></placeName>.
-        </education>
+            <education>
+                <xsl:copy-of select="@to | @from | @when"/>
+                <xsl:value-of select="name"/> in <xsl:value-of select="discipline"/> at <placeName><xsl:value-of select="institution"/></placeName>.</education>
+        
+      
     </xsl:template>
+  
+  <xsl:template match="listJobs | listDegrees">
+      <xsl:apply-templates/>
+  </xsl:template>
     
-    <xsl:template match="awards">
-        <note>
-            <p>Awards received:
-            <list xml:id="CV_awards">
-                <xsl:apply-templates/>
-            </list>
-        </p>
-        </note>
-    </xsl:template>
     
-    <xsl:template match="awards/award">
-        <item><xsl:value-of select ="."/> (<xsl:copy-of select="cv:getDateFromElement(.)"/>)</item>
-    </xsl:template>
-    
-    <xsl:template match="publications | conferences">
-        <listBibl xml:id="CV_{local-name()}">
+    <xsl:template match="listPublications | listConferences">
+        <listBibl>
+            <xsl:apply-templates select="parent::*/head"/>
             <xsl:apply-templates/>
         </listBibl>
     </xsl:template>
+ 
     
+    
+    <xsl:template match="head">
+        <head><xsl:apply-templates/></head>
+    </xsl:template>
+    
+     
     <xsl:template match="publication | conference">
         <bibl><xsl:apply-templates/></bibl>
     </xsl:template>
+
     
-<!--    I borrow elements from TEI/bibl structure for publication and conference,
-    so I just need to switch the namespace.-->
-    <xsl:template match="publication/* | conference/*">
-        <xsl:element name="{local-name()}">
-            <xsl:copy-of select="@*"/>
-            <xsl:apply-templates/>
-        </xsl:element>
+    <xsl:template match="ref">
+        <ref><xsl:copy-of select="@*"/><xsl:apply-templates/></ref>
     </xsl:template>
     
-    <xsl:template match="employment | service | teaching">
-        <occupation xml:id="CV_{local-name()}">
-            <note> 
-                <list>
-                    <xsl:apply-templates/>
-                </list>
-            </note>
+    <xsl:template match="title">
+        <title><xsl:copy-of select="@*"/><xsl:apply-templates/></title>
+    </xsl:template>
+    
+    
+    <xsl:template match="job">
+        <occupation type="{if (ancestor::section[@type='service']) then 'unpaid' else 'paid'}">
+            <xsl:copy-of select="@from | @to |@when"/>
+            <xsl:variable name="string" as="xs:string+">
+                <xsl:choose>
+                    <xsl:when test="class"><xsl:value-of select="role"/> for <xsl:value-of select="class"/>.</xsl:when>
+                    <xsl:otherwise><xsl:value-of select="job_title"/> at <xsl:value-of select="workplace"/>.</xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <p><xsl:value-of select="normalize-space(string-join($string,''))"/></p>
         </occupation>
     </xsl:template>
     
-    <xsl:template match="job">
-        <item>
-            <xsl:choose>
-                <xsl:when test="parent::teaching">
-                    <p>Taught <xsl:value-of select="class"/> in the role of <xsl:value-of select="role"/> (<xsl:copy-of select="cv:getDateFromElement(.)"/>).</p>
-                </xsl:when>
-                <xsl:otherwise>
-                    <p><xsl:value-of select="job_title"/> at <xsl:value-of select="workplace"/>.<xsl:if test="supervisor">Supervised by <xsl:value-of select="supervisor"/>.</xsl:if> (<xsl:copy-of select="cv:getDateFromElement(.)"/>)</p>
-                </xsl:otherwise>
-            </xsl:choose>
-           
-        </item>
+    <xsl:template match="listReferences[not(reference)]">
+        <note>References available by request.</note>
     </xsl:template>
-    
     <!--Suppress-->
-    <xsl:template match="head | references | email |name"/>
+    <xsl:template match="references | email |name"/>
     
     <xsl:function name="cv:getDateFromElement" as="element(tei:date)">
         <xsl:param name="el" as="element()"/>
@@ -154,6 +142,22 @@
         </date>
     </xsl:function>
     
+    
+    
+    <xsl:template match="*[starts-with(local-name(.),'list')]" priority="-1">
+        <note>
+            <list>
+                <xsl:apply-templates select="parent::*/head"/>
+                <xsl:apply-templates/>
+            </list> 
+        </note>
+    </xsl:template>
+    
+    <xsl:template match="*[starts-with(local-name(.),'list')][not(self::listPublications | self::listConferences)]/*" priority="-1">
+        <item>
+            <xsl:apply-templates/><xsl:if test="@to | @from | @when"> (<xsl:copy-of select="cv:getDateFromElement(.)"/>)</xsl:if>
+        </item>
+    </xsl:template>
     
 
 </xsl:stylesheet>
