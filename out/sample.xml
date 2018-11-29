@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:id="CV">
+   <teiHeader>
+      <fileDesc>
+         <titleStmt>
+            <title>John Smith's Curriculum Vitae</title>
+         </titleStmt>
+         <publicationStmt>
+            <p> Last generated 2018-11-29.</p>
+         </publicationStmt>
+         <sourceDesc>
+            <p>Born digital, but generated using XSLT.</p>
+         </sourceDesc>
+      </fileDesc>
+      <profileDesc>
+         <particDesc>
+            <person xml:id="me">
+               <persName>
+                  <name>John Smith</name>
+                  <email/>
+               </persName>
+            </person>
+         </particDesc>
+      </profileDesc>
+   </teiHeader>
+   <text>
+      <body>
+         <listPerson>
+            <person sameAs="#me">
+        
+        
+               <education from="1998" to="2002">Bachelor of Science in Bioengineering at <placeName>Harvard</placeName>.</education>
+        
+    
+        
+               <listBibl>
+                  <head>Publications</head>
+                  <bibl>Smith, John. <title level="m">My Monograph</title>. Duke University Press, 2018.</bibl>
+               </listBibl>
+    
+        
+               <listBibl>
+                  <head>Presentations</head>
+                  <bibl>Smith, John. <title level="a">Some Conference Title</title>. The Conference. 2012.</bibl>
+               </listBibl>
+    
+        
+        
+               <occupation type="paid" from="2012-01" to="2014-05">
+                  <p>Director of Academic Affairs at .</p>
+               </occupation>
+        
+            </person>
+         </listPerson>
+      </body>
+   </text>
+</TEI>

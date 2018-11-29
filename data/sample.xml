@@ -15,4 +15,24 @@
             </degree>
         </listDegrees>
     </section>
+    <section type="publications">
+        <head>Publications</head>
+        <listPublications>
+            <publication>Smith, John. <title level="m">My Monograph</title>. Duke University Press, 2018.</publication>
+        </listPublications>
+    </section>
+    <section type="presentations">
+        <head>Presentations</head>
+        <listConferences>
+            <conference>Smith, John. <title level="a">Some Conference Title</title>. The Conference. 2012.</conference>
+        </listConferences>
+    </section>
+    <section type="jobs">
+        <head>Academic Employment</head>
+        <listJobs>
+            <job from="2012-01" to="2014-05">
+                <job_title>Director of Academic Affairs</job_title>
+            </job>
+        </listJobs>
+    </section>
 </cv>

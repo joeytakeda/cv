@@ -226,6 +226,21 @@
     </xsl:template>
     
 
+    <xsl:template match="title[@level='a']">
+        <xsl:text>“</xsl:text>
+            <xsl:apply-templates mode="#current"/>
+            <xsl:if test="following::*|text()[1][self::text()] and matches(following::text()[1], '^[,\.]') and not(child::*[self::title[@level='a']][not(following-sibling::text())]) or not(following-sibling::*)">
+                <xsl:value-of select="substring(following::text()[1], 1, 1)"/>
+            </xsl:if>
+        <xsl:text>”</xsl:text>
+    </xsl:template>
+    
+
+    <xsl:template match="text()[not(ancestor::title[@level='a'])][preceding::text()[1][ancestor::title[@level='a']]][matches(., '^[,\.]')]">
+        <xsl:value-of select="substring(., 2)"/>
+    </xsl:template>
+    
+
     
     <xsl:template match="ref[@target]">
         <xsl:variable name="dest" select="if (@type='local') then replace(concat('https://joeytakeda.github.io/',@target),'\.\./','') else @target"/>

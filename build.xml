@@ -12,7 +12,7 @@
 
 
     <!--Files-->
-    <property name="source.cv" value="${source.dir}/elspeth_cv.xml"/>
+    <property name="source.cv" value="${source.dir}/sample.xml"/>
     <basename property="fname" file="${source.cv}" suffix="xml"/>
     <property name="html" value="${out.dir}/${fname}.html"/>
     <property name="tei" value="${out.dir}/${fname}.xml"/>
