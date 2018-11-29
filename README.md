@@ -60,4 +60,6 @@ This will create a PDF, HTML, and other versions of your CV.
 
 You can adjust the data/sample.xml to fit your needs. Order of the elements do not matter, usually. Follow the prompts given by the schema.
 
+For a longer example, see https://github.com/joeytakeda/joeytakeda.github.io/blob/master/xml/CV.xml
+
 
