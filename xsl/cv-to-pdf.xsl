@@ -154,8 +154,11 @@
                                 <xsl:when test="@when">
                                    <xsl:value-of select="cv:formatSingleDate(@when)"/>
                                 </xsl:when>
-                                <xsl:when test="@to and @from">
+                                <xsl:when test="@to and @from and not(expected[matches(@locus,'(to)|(from)')])">
                                     <xsl:value-of select="cv:formatDateRange(@from,@to)"/>
+                                </xsl:when>
+                                <xsl:when test="@to and @from and expected[matches(@locus,'(from)|(to)')]">
+                                    <xsl:value-of select="cv:formatSingleDate(@from)"/>–<xsl:value-of select="cv:formatSingleDate(@to)"/><inline font-size="90%"> (expected)</inline>
                                 </xsl:when>
                                 <xsl:when test="@from">
                                     <xsl:value-of select="cv:formatSingleDate(@from)"/><xsl:text>–present</xsl:text>

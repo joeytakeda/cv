@@ -5,7 +5,7 @@
          xmlns:teix="http://www.tei-c.org/ns/Examples"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
          ns="http://joeytakeda.github.io/ns/"><!--
-Schema generated from ODD source 2018-09-09T00:51:57Z. .
+Schema generated from ODD source 2019-01-18T22:26:20Z. .
 TEI Edition: Version 3.3.0. Last updated on
 	31st January 2018, revision f4d8439
 TEI Edition Location: http://www.tei-c.org/Vault/P5/Version 3.3.0/
@@ -91,10 +91,23 @@ TEI Edition Location: http://www.tei-c.org/Vault/P5/Version 3.3.0/
    <define name="degree">
       <element name="degree">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <optional>
+            <ref name="expected"/>
+         </optional>
          <ref name="name"/>
          <ref name="discipline"/>
          <ref name="institution"/>
          <ref name="cv.att.datable.attributes"/>
+         <empty/>
+      </element>
+   </define>
+   <define name="expected">
+      <element name="expected">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <empty/>
+         <attribute name="locus">
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         </attribute>
          <empty/>
       </element>
    </define>

@@ -8,7 +8,7 @@
             <title>John Smith's Curriculum Vitae</title>
          </titleStmt>
          <publicationStmt>
-            <p> Last generated 2018-11-29.</p>
+            <p> Last generated 2019-01-18.</p>
          </publicationStmt>
          <sourceDesc>
             <p>Born digital, but generated using XSLT.</p>
@@ -31,6 +31,7 @@
             <person sameAs="#me">
         
         
+               <education from="2014" to="2020">Doctor of Science in Chemical Engineering at <placeName>Cambridge</placeName>.</education>
                <education from="1998" to="2002">Bachelor of Science in Bioengineering at <placeName>Harvard</placeName>.</education>
         
     

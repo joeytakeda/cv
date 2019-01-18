@@ -106,10 +106,25 @@
             <memberOf key="cv.att.datable"/>
           </classes>
           <content>
+            <elementRef key="expected" minOccurs="0"/>
             <elementRef key="name"/>
             <elementRef key="discipline"/>
             <elementRef key="institution"/>
           </content>
+        </elementSpec>
+        
+        <elementSpec ident="expected" module="cv">
+          <content>
+            <empty/>
+          </content>
+          <attList>
+            <attDef ident="locus" usage="req">
+              <datatype>
+                <dataRef key="teidata.enumerated"/>
+              </datatype>
+            </attDef>
+          </attList>
+          
         </elementSpec>
         
         <elementSpec ident="discipline">

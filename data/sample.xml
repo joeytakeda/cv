@@ -8,6 +8,12 @@
     <section type="education">
         <head>Education</head>
         <listDegrees>
+            <degree from="2014" to="2020">
+                <expected locus="to"/>
+                <name>Doctor of Science</name>
+                <discipline>Chemical Engineering</discipline>
+                <institution>Cambridge</institution>
+            </degree>
             <degree from="1998" to="2002">
                 <name>Bachelor of Science</name>
                 <discipline>Bioengineering</discipline>
