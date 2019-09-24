@@ -18,13 +18,31 @@
             <html>
                 <head>
                     <title><xsl:value-of select="name"/>: CV</title>
-                    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,400,300,600' rel='stylesheet' type='text/css'/>
-                    <link rel="stylesheet" href="../css/CV.css" type="text/css"/>
+                    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+                    <link rel="stylesheet" href="../css/redesign.css" type="text/css"/>
+                    <meta name="viewport" content="width=device-width, initial-scale=1"/>
                 </head>
                 <body>
-                    <h1><xsl:value-of select="name"/></h1>
-                    <span class="email"><a href="mailto:{email}"><xsl:value-of select="email"/></a></span>
-                    <xsl:apply-templates/>
+                    <header>
+                        <h1><xsl:value-of select="name"/></h1>
+                        <div class="links">
+                            <span class="email"><a href="mailto:{email}"><xsl:value-of select="email"/></a></span>
+                            <span class="github"><a href="https://github.com/{@href}"><xsl:value-of select="github"/></a></span>
+                        </div>
+                    </header>
+                    
+                    <div class="formats">
+                        <span class="label">Formats:</span>
+                        <ul>
+                            <li><a href="docs/CV.pdf">PDF</a></li>
+                            <li><a href="docs/CV.xml">TEI</a></li>
+                        </ul>
+                    </div>
+                   
+                    <div class="cv">
+                        <xsl:apply-templates/>
+                    </div>
+                
                     <div id="revision">
                         <p>Last revision: <xsl:value-of select="format-date(current-date(),'[MNn] [D1o], [Y0001]')"/></p>
                     </div>
@@ -35,12 +53,16 @@
     </xsl:template>
     
 <!--    We manipulate those throughout.-->
-    <xsl:template match="cv/email | cv/name"/>
+    <xsl:template match="cv/email | cv/name | cv/github"/>
     
     <xsl:template match="section">
-        <div class="section">
-            <xsl:apply-templates/>
-        </div>
+        <section>
+            <xsl:apply-templates select="@*|node()"/>
+        </section>
+    </xsl:template>
+    
+    <xsl:template match="section/@type">
+        <xsl:attribute name="class" select="."/>
     </xsl:template>
     
     <xsl:template match="listReferences">
@@ -83,17 +105,22 @@
     <xsl:template match="job/desc"/>
         
         
-    <xsl:template match="publication | job | reference |degree | conference">
-        <div class="item">
+    <xsl:template match="publication | job | reference |degree | conference | award">
+        <xsl:variable name="dated" select="exists(@when|@to|@from)"/>
+        <div class="item{if ($dated) then ' flex' else ''}">
             <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates select="node()"/>
-        </div>
-    </xsl:template>
-    
-    <xsl:template match="award">
-        <div class="award">
-            <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates select="node()"/>
+            <xsl:choose>
+                <xsl:when test="$dated">
+                    <div class="content">
+                        <xsl:apply-templates select="node()"/>
+                    </div>
+                    
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates select="node()"/>
+                </xsl:otherwise>
+            </xsl:choose>
+         
         </div>
     </xsl:template>
     
@@ -116,6 +143,10 @@
     <xsl:template match="@from">
         <span class="date">
             <xsl:choose>
+                <xsl:when test="parent::degree">
+                    <xsl:value-of select="parent::*/@to"/>
+                    <xsl:if test="parent::*/expected[@locus='@to']"> (expected)</xsl:if>
+                </xsl:when>
                 <xsl:when test="parent::*/@to">
                     <xsl:value-of select="cv:formatDateRange(.,parent::*/@to)"/>
                 </xsl:when>
