@@ -61,6 +61,9 @@
         <xsl:message>date2: <xsl:value-of select="$date2"/> / year2: <xsl:value-of select="$year2"/></xsl:message>-->
 <!--        <xsl:message>Does year1 = year 2? <xsl:value-of select="$year1=$year2"/></xsl:message>-->
         <xsl:choose>
+            <xsl:when test="$date1 = $date2">
+                <xsl:value-of select="$date2"/>
+            </xsl:when>
             <xsl:when test="$year1=$year2">
                 <xsl:value-of select="normalize-space(substring-before($date1,$year1))"/><xsl:text>–</xsl:text><xsl:value-of select="$date2"/>
             </xsl:when>
@@ -74,4 +77,21 @@
         <xsl:param name="string"/>
         <xsl:sequence select="tokenize($string,'-')"/>
     </xsl:function>
+    
+    <xsl:function name="cv:castToDate" as="xs:date?">
+        <xsl:param name="in" as="item()*"/>
+        <xsl:choose>
+            <xsl:when test="empty($in)"/>
+            <xsl:when test="$in castable as xs:date">
+                <xsl:sequence select="$in"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="str" select="string($in)" as="xs:string"/>
+                <xsl:variable name="tokens" select="tokenize($str,'-')" as="xs:string*"/>
+                <xsl:variable name="seq" select="$tokens, '01','01'" as="xs:string+"/>
+                <xsl:sequence select="string-join(subsequence($seq,1,3),'-') => xs:date()"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+    
 </xsl:stylesheet>

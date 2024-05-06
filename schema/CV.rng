@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
-         xmlns:xlink="http://www.w3.org/1999/xlink"
          xmlns:tei="http://www.tei-c.org/ns/1.0"
          xmlns:teix="http://www.tei-c.org/ns/Examples"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
          ns="http://joeytakeda.github.io/ns/"><!--
-Schema generated from ODD source 2019-01-18T22:26:20Z. .
-TEI Edition: Version 3.3.0. Last updated on
-	31st January 2018, revision f4d8439
-TEI Edition Location: http://www.tei-c.org/Vault/P5/Version 3.3.0/
+Schema generated from ODD source 2023-05-16T04:48:16Z. .
+TEI Edition: Version 4.4.0. Last updated on
+        19th April 2022, revision ff9cc28b0
+TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
   
 --><!---->
    <sch:ns xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -17,24 +17,39 @@ TEI Edition Location: http://www.tei-c.org/Vault/P5/Version 3.3.0/
    <define name="cv.mixedContent">
       <zeroOrMore>
          <choice>
+            <ref name="list"/>
             <text/>
             <ref name="title"/>
             <ref name="ref"/>
+            <ref name="hi"/>
+            <ref name="ptr"/>
          </choice>
       </zeroOrMore>
    </define>
    <define name="cv">
       <element name="cv">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">root CV element; contains a cv.</a:documentation>
-         <ref name="name"/>
-         <ref name="email"/>
-         <optional>
-            <ref name="phone"/>
-         </optional>
-         <ref name="website"/>
-         <oneOrMore>
-            <ref name="section"/>
-         </oneOrMore>
+         <group>
+            <ref name="name"/>
+            <ref name="email"/>
+            <group>
+               <optional>
+                  <ref name="phone"/>
+               </optional>
+               <optional>
+                  <ref name="github"/>
+               </optional>
+               <optional>
+                  <ref name="orcid"/>
+               </optional>
+               <optional>
+                  <ref name="website"/>
+               </optional>
+            </group>
+            <oneOrMore>
+               <ref name="section"/>
+            </oneOrMore>
+         </group>
       </element>
    </define>
    <define name="name">
@@ -69,16 +84,39 @@ TEI Edition Location: http://www.tei-c.org/Vault/P5/Version 3.3.0/
          <empty/>
       </element>
    </define>
+   <define name="github">
+      <element name="github">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.global.attributes"/>
+         <empty/>
+      </element>
+   </define>
+   <define name="orcid">
+      <element name="orcid">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.global.attributes"/>
+         <empty/>
+      </element>
+   </define>
    <define name="section">
       <element name="section">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(a section of the CV.) an arbitrary section</a:documentation>
          <ref name="head"/>
+         <choice>
+            <oneOrMore>
+               <ref name="section"/>
+            </oneOrMore>
+            <optional>
+               <ref name="cv.model.listLike"/>
+            </optional>
+         </choice>
          <optional>
-            <ref name="cv.model.listLike"/>
+            <attribute name="type">
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+            </attribute>
          </optional>
-         <attribute name="type">
-            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
-         </attribute>
          <empty/>
       </element>
    </define>
@@ -91,12 +129,16 @@ TEI Edition Location: http://www.tei-c.org/Vault/P5/Version 3.3.0/
    <define name="degree">
       <element name="degree">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
-         <optional>
-            <ref name="expected"/>
-         </optional>
-         <ref name="name"/>
-         <ref name="discipline"/>
-         <ref name="institution"/>
+         <group>
+            <optional>
+               <ref name="expected"/>
+            </optional>
+            <ref name="name"/>
+            <optional>
+               <ref name="discipline"/>
+            </optional>
+            <ref name="institution"/>
+         </group>
          <ref name="cv.att.datable.attributes"/>
          <empty/>
       </element>
@@ -144,20 +186,33 @@ TEI Edition Location: http://www.tei-c.org/Vault/P5/Version 3.3.0/
                <ref name="workplace"/>
             </choice>
          </zeroOrMore>
-         <sch:pattern xmlns:xi="http://www.w3.org/2001/XInclude"
-                      xmlns:svg="http://www.w3.org/2000/svg"
-                      xmlns:math="http://www.w3.org/1998/Math/MathML"
-                      xmlns="http://www.tei-c.org/ns/1.0"
+         <sch:pattern xmlns="http://www.tei-c.org/ns/1.0"
                       xmlns:jt="http://joeytakeda.github.io/ns/"
-                      xmlns:sch="http://purl.oclc.org/dsdl/schematron">
-                <sch:rule context="jt:job[@from]| jt:job[@to]">
-                  <sch:let name="fromTokens" value="tokenize(@from,'-')"/>
-                  <sch:assert test="every $q in  (@from | @to) satisfies count(tokenize($q,'-')) gt 1">
+                      xmlns:math="http://www.w3.org/1998/Math/MathML"
+                      xmlns:sch="http://purl.oclc.org/dsdl/schematron"
+                      xmlns:svg="http://www.w3.org/2000/svg"
+                      xmlns:xi="http://www.w3.org/2001/XInclude">
+            <sch:rule context="jt:job[@from]| jt:job[@to]">
+               <sch:let name="fromTokens" value="tokenize(@from,'-')"/>
+               <sch:assert test="every $q in  (@from | @to) satisfies count(tokenize($q,'-')) gt 1">
                     ERROR: All job dates should include the month.
                   </sch:assert>
-                </sch:rule>
-              </sch:pattern>
+            </sch:rule>
+         </sch:pattern>
          <ref name="cv.att.datable.attributes"/>
+         <empty/>
+      </element>
+   </define>
+   <define name="ptr">
+      <element name="ptr">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <empty/>
+         <optional>
+            <attribute name="target">
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+               <data type="anyURI"/>
+            </attribute>
+         </optional>
          <empty/>
       </element>
    </define>
@@ -298,6 +353,33 @@ TEI Edition Location: http://www.tei-c.org/Vault/P5/Version 3.3.0/
          <empty/>
       </element>
    </define>
+   <define name="hi">
+      <element name="hi">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <optional>
+            <attribute name="rend">
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+               <data type="token"/>
+            </attribute>
+         </optional>
+         <empty/>
+      </element>
+   </define>
+   <define name="list">
+      <element name="list">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <oneOrMore>
+            <ref name="item"/>
+         </oneOrMore>
+      </element>
+   </define>
+   <define name="item">
+      <element name="item">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+      </element>
+   </define>
    <define name="cv.att.datable.attributes">
       <ref name="cv.att.datable.attribute.to"/>
       <ref name="cv.att.datable.attribute.from"/>
@@ -388,7 +470,12 @@ TEI Edition Location: http://www.tei-c.org/Vault/P5/Version 3.3.0/
          <ref name="cv"/>
       </choice>
    </start>
-   <ns xmlns="http://purl.oclc.org/dsdl/schematron"
-       prefix="jt"
-       uri="http://joeytakeda.github.io/ns/"/>
+   <sch:ns xmlns="http://www.tei-c.org/ns/1.0"
+           xmlns:jt="http://joeytakeda.github.io/ns/"
+           xmlns:math="http://www.w3.org/1998/Math/MathML"
+           xmlns:sch="http://purl.oclc.org/dsdl/schematron"
+           xmlns:svg="http://www.w3.org/2000/svg"
+           xmlns:xi="http://www.w3.org/2001/XInclude"
+           uri="http://joeytakeda.github.io/ns/"
+           prefix="jt"/>
 </grammar>

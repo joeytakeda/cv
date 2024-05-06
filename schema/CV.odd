@@ -25,13 +25,22 @@
         <elementSpec ident="cv" module="cv">
           <desc>root CV element; contains a cv.</desc>
           <content>
-            <elementRef key="name"/>
-            <elementRef key="email"/>
-            <elementRef key="phone" minOccurs="0"/>
-            <elementRef key="website"/>
-            <elementRef key="section" minOccurs="1" maxOccurs="unbounded"/>
+            <sequence>
+              <elementRef key="name"/>
+              <elementRef key="email"/>
+              <sequence preserveOrder="false">
+                <elementRef key="phone" minOccurs="0"/>
+                <elementRef key="github" minOccurs="0"/>
+                <elementRef key="orcid" minOccurs="0"/>
+                <elementRef key="website" minOccurs="0"/>
+              </sequence>
+              <elementRef key="section" minOccurs="1" maxOccurs="unbounded"/>
+              
+            </sequence>
+
           </content>
         </elementSpec>
+       
         
         <elementSpec ident="name">
           <classes>
@@ -65,6 +74,22 @@
             <macroRef key="cv.mixedContent"/>
           </content>
         </elementSpec>
+        <elementSpec ident="github">
+          <classes>
+            <memberOf key="cv.att.global"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        <elementSpec ident="orcid">
+          <classes>
+            <memberOf key="cv.att.global"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
           
         
         
@@ -73,10 +98,14 @@
           <gloss>a section of the CV.</gloss>
           <content>
             <elementRef key="head"/>
-            <classRef key="cv.model.listLike" minOccurs="0" maxOccurs="1"/>
+            <alternate>
+              <elementRef key="section" maxOccurs="unbounded"/>
+              <classRef key="cv.model.listLike" minOccurs="0" maxOccurs="1"/>
+            </alternate>
+
           </content>
           <attList>
-            <attDef ident="type" usage="req">
+            <attDef ident="type" usage="rec">
               <datatype>
                 <dataRef key="teidata.enumerated"/>
               </datatype>
@@ -106,10 +135,12 @@
             <memberOf key="cv.att.datable"/>
           </classes>
           <content>
-            <elementRef key="expected" minOccurs="0"/>
-            <elementRef key="name"/>
-            <elementRef key="discipline"/>
-            <elementRef key="institution"/>
+            <sequence>
+              <elementRef key="expected" minOccurs="0"/>
+              <elementRef key="name"/>
+              <elementRef key="discipline" minOccurs="0"/>
+              <elementRef key="institution"/>
+            </sequence>
           </content>
         </elementSpec>
         
@@ -174,6 +205,19 @@
               </sch:pattern>
             </constraint>
           </constraintSpec>
+        </elementSpec>
+        
+        <elementSpec ident="ptr" module="cv">
+          <classes>
+            <memberOf key="cv.mixedContent"/>
+          </classes>
+          <attList>
+            <attDef ident="target">
+              <datatype>
+                <dataRef name="anyURI"/>
+              </datatype>
+            </attDef>
+          </attList>
         </elementSpec>
         
         <elementSpec ident="role" module="cv">
@@ -320,6 +364,35 @@
             <macroRef key="cv.mixedContent"/>
           </content>
         </elementSpec>
+        
+        <elementSpec ident="hi">
+          <classes>
+            <memberOf key="cv.mixedContent"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+          <attList>
+            <attDef ident="rend">
+              <datatype>
+                <dataRef name="token"/>
+              </datatype>
+              
+            </attDef>
+          </attList>
+        </elementSpec>
+        
+        <elementSpec ident="list">
+          <content>
+            <elementRef key="item" minOccurs="1" maxOccurs="unbounded"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="item">
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
 
         
         <classSpec ident="cv.att.datable" type="atts">
@@ -354,11 +427,15 @@
         
         <macroSpec ident="cv.mixedContent" module="cv">
           <content>
-            <alternate minOccurs="0" maxOccurs="unbounded">
-              <textNode/>
-              <elementRef key="title"/>
-              <elementRef key="ref"/>
-            </alternate>
+
+              <alternate minOccurs="0" maxOccurs="unbounded">
+                <elementRef key="list"/>
+                <textNode/>
+                <elementRef key="title"/>
+                <elementRef key="ref"/>
+                <elementRef key="hi"/>
+                <elementRef key="ptr"/>
+              </alternate>
           </content>
         </macroSpec>
         

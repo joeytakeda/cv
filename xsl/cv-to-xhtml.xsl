@@ -19,7 +19,7 @@
                 <head>
                     <title><xsl:value-of select="name"/>: CV</title>
                     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-                    <link rel="stylesheet" href="../css/redesign.css" type="text/css"/>
+                   <!-- <link rel="stylesheet" href="../css/redesign.css" type="text/css"/>-->
                     <meta name="viewport" content="width=device-width, initial-scale=1"/>
                 </head>
                 <body>
@@ -83,22 +83,34 @@
         </div>
     </xsl:template>
     
+    <xsl:template match="list">
+        <ul>
+            <xsl:apply-templates/>
+        </ul>
+    </xsl:template>
+    
+    <xsl:template match="list/item">
+        <li>
+            <xsl:apply-templates/>
+        </li>
+    </xsl:template>
+    
     <xsl:template match="head">
-        <h2><xsl:value-of select="upper-case(.)"/></h2>
+        <xsl:element name="h{count(ancestor::section)  + 1}"><xsl:value-of select="upper-case(.)"/></xsl:element>
         <hr/>
     </xsl:template>
     
     <xsl:template match="workplace | job_title | location | class | role| institution | byline">
-        <div class="desc">
+        <span class="desc">
             <xsl:apply-templates/>
-        </div>
+        </span>
     </xsl:template>
     
     
     <xsl:template match="supervisor">
-        <div class="desc">
+        <span class="desc">
             Supervisor: <xsl:apply-templates/>
-        </div>
+        </span>
     </xsl:template>
     
 <!--    Suppress-->
@@ -111,9 +123,9 @@
             <xsl:apply-templates select="@*"/>
             <xsl:choose>
                 <xsl:when test="$dated">
-                    <div class="content">
+                    <span class="content">
                         <xsl:apply-templates select="node()"/>
-                    </div>
+                    </span>
                     
                 </xsl:when>
                 <xsl:otherwise>

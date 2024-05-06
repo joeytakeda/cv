@@ -153,6 +153,12 @@
         </note>
     </xsl:template>
     
+    <xsl:template match="list/item/list">
+        <list>
+            <xsl:apply-templates/>
+        </list>
+    </xsl:template>
+    
     <xsl:template match="*[starts-with(local-name(.),'list')][not(self::listPublications | self::listConferences)]/*" priority="-1">
         <item>
             <xsl:apply-templates/><xsl:if test="@to | @from | @when"> (<xsl:copy-of select="cv:getDateFromElement(.)"/>)</xsl:if>
