@@ -4,6 +4,8 @@
     xmlns:fo="http://www.w3.org/1999/XSL/Format"
     xmlns:cv="http://joeytakeda.github.io/ns/"
     exclude-result-prefixes="xs"
+    xmlns:map="http://www.w3.org/2005/xpath-functions/map"
+    xmlns:math="http://www.w3.org/2005/xpath-functions/math"
     xmlns="http://www.w3.org/1999/XSL/Format"
     xpath-default-namespace="http://joeytakeda.github.io/ns/"
     version="3.0">
@@ -15,20 +17,35 @@
     <xsl:param name="displayDesc" select="'false'"/>
     <xsl:param name="compressed" select="'true'"/>
     <xsl:param name="allDates" select="'false'"/>
+    <xsl:param name="fontFamily" select="'CormorantGaramond'"/>
+    <xsl:param name="pageHeight">11.00in</xsl:param>
+    <xsl:param name="pageWidth">8.5in</xsl:param>
+    <xsl:param name="marginTop">0.75in</xsl:param>
+    <xsl:param name="marginBottom">0.75in</xsl:param>
+    <xsl:param name="marginLeft">0.75in</xsl:param>
+    <xsl:param name="marginRight">0.75in</xsl:param>
+    <xsl:param name="showMonth" select="'false'"/>
+
     <xsl:param name="date"/>
+    
+  
     
    
    <xsl:strip-space elements="*" />
     <xsl:preserve-space elements="conference publication"/>
     <xsl:output method="xml" indent="no"/>
     <xsl:attribute-set name="page-dims">
-        <xsl:attribute name="page-height">11.00in</xsl:attribute>
-        <xsl:attribute name="page-width">8.50in</xsl:attribute>
-        <xsl:attribute name="margin-top">0.75in</xsl:attribute>
-        <xsl:attribute name="margin-bottom">0.75in</xsl:attribute>
-        <xsl:attribute name="margin-left">0.75in</xsl:attribute>
-        <xsl:attribute name="margin-right">0.75in</xsl:attribute>
+        <xsl:attribute name="page-height" select="$pageHeight"/>
+        <xsl:attribute name="page-width" select="$pageWidth"/>
+        <xsl:attribute name="margin-top" select="$marginTop"/>
+        <xsl:attribute name="margin-bottom" select="$marginBottom"/>
+        <xsl:attribute name="margin-left" select="$marginLeft"/>
+        <xsl:attribute name="margin-right" select="$marginRight"/>
     </xsl:attribute-set>
+    
+    <xsl:variable name="this" select="/" as="document-node()"/>
+    
+    
     <xsl:template match="/">
         <xsl:message>Creating FO file...</xsl:message>
        <!-- <xsl:message>
@@ -40,7 +57,7 @@
            
         </xsl:message>
         
-        <root font-family="CormorantGaramond">
+        <root font-family="{$fontFamily}">
             <layout-master-set>
                 <simple-page-master  xsl:use-attribute-sets="page-dims"
                     master-name="first-page"
@@ -48,7 +65,7 @@
                     <region-body/>
                 </simple-page-master>
                 <simple-page-master master-name="rest"
-                    page-height="11.00in" 
+
                     xsl:use-attribute-sets="page-dims"
                     margin-bottom=".4in">
           
@@ -58,7 +75,7 @@
                 </simple-page-master>
                 <page-sequence-master master-name="CV">
                     <repeatable-page-master-alternatives>
-                        <conditional-page-master-reference page-position="first" master-reference="first-page"/>
+                        <conditional-page-master-reference page-position="first" master-reference="rest"/>
                         <conditional-page-master-reference 
                             page-position="rest" master-reference="rest"/>
                     </repeatable-page-master-alternatives>
@@ -83,32 +100,65 @@
                 </x:xmpmeta>
             </declarations>
             
-            <page-sequence master-reference="CV">
+            <xsl:where-populated>
+                <bookmark-tree>
+                    <xsl:apply-templates mode="bookmark"/>
+                </bookmark-tree> 
+            </xsl:where-populated>
+            
+            <page-sequence master-reference="CV" id="CV">
                 <static-content flow-name="xsl-region-after">
-                    <block text-align="right" font-size="0.8em">
-                            <retrieve-marker retrieve-class-name="section" retrieve-position="last-starting-within-page"/> | <page-number/> 
+                    <block text-align="right" color="#9c9c9c" font-size="{cv:font-scale(-1)}pt">
+                        <xsl:value-of select="//cv/name/surname[1]"/> | <retrieve-marker retrieve-class-name="section" retrieve-position="last-starting-within-page"/> | <page-number/> of <page-number-citation-last ref-id="CV"/>
+                        
                     </block>
                 </static-content>
-                <flow flow-name="xsl-region-body" line-stacking-strategy="line-height">
+                <flow flow-name="xsl-region-body" line-stacking-strategy="font-height">
                     <xsl:apply-templates/>
                 </flow>
             </page-sequence>
+           
         </root>
     </xsl:template>
     
+  
+    
+    <xsl:template match="*[@xml:id][head]" mode="bookmark">
+        <bookmark internal-destination="{@xml:id}">
+            <bookmark-title>
+                <xsl:value-of select="head"/>
+            </bookmark-title>
+            <xsl:apply-templates select="*" mode="#current"/>
+        </bookmark>
+    </xsl:template>
+    
+    
+    
+    <xsl:template match="*" priority="0" mode="bookmark">
+        <xsl:apply-templates select="*" mode="#current"/>
+    </xsl:template>
+    
+    <xsl:template match="@* | text()" priority="0" mode="bookmark"/>
+    
     <xsl:template match="cv">
         <xsl:apply-templates select="name"/>
-        <block font-size="12pt" padding-bottom=".2em">
-            <xsl:for-each select="* except (name, section)">
+        <block font-size="{$fontsize}pt" padding-bottom=".2em">
+            <xsl:for-each select="* except (name, section, standoff)">
                 <xsl:apply-templates select="."/>
                 <xsl:if test="position() ne last()">
                     <xsl:text> | </xsl:text>
                 </xsl:if>
             </xsl:for-each>
         </block>
-        <block padding="1em 0 0 0"/>
+        <!--<block padding="1em 0 0 0"/>-->
         <xsl:apply-templates select="section"/>
     </xsl:template>
+    
+    <!--Completely skip anything that is said to be hidden-->
+    <xsl:template match="*[@hidden][xs:boolean(@hidden)]" mode="#all" priority="10"/>
+        
+    
+    
     
     <xsl:template match="email | github | phone | orcid">
         <inline>
@@ -125,7 +175,10 @@
     
     <!--Header stuff-->
     <xsl:template match="cv/name">
-        <block font-size="20pt" padding-bottom="0.2em" font-weight="600">
+        <block font-size="{cv:font-scale(4)}pt" padding-bottom="0.2em">
+            <xsl:if test="not(matches($fontFamily,'Bembo'))">
+                <xsl:attribute name="font-weight">600</xsl:attribute>
+            </xsl:if>
             <xsl:value-of select="."/>
         </block>
     </xsl:template>
@@ -157,8 +210,13 @@
     -->
     
     <xsl:template match="section">
-        <block keep-together.within-page="auto">
-            
+        <block font-size="{$fontsize}pt" keep-together.within-page="auto">
+            <xsl:if test="@xml:id">
+                <xsl:attribute name="id" select="@xml:id"/>
+            </xsl:if>
+            <xsl:if test="./head and parent::section and following-sibling::section">
+                <xsl:attribute name="margin-bottom">0.3em</xsl:attribute>
+            </xsl:if>
             <xsl:apply-templates/>
             <xsl:if test="parent::cv and head">
                 <block>
@@ -173,14 +231,33 @@
     <!--Each section-->
     
     <xsl:template match="cv/section/head">
-        <block-container keep-with-next.within-page="always" keep-together.within-page="always" page-break-before="auto" page-break-after="avoid" page-break-inside="avoid" margin-bottom="0.5em">
+        <block-container 
+            keep-with-next.within-page="always" 
+            keep-together.within-page="always" 
+            page-break-before="auto" 
+            page-break-after="avoid" 
+            page-break-inside="avoid"
+            margin-bottom="0.3em">
             <block>
                 <marker marker-class-name="section">
                     <xsl:value-of select="string(.)"/>
                 </marker>
             </block>
-            <block font-weight="600" font-size="16pt" margin-top="0.3em" padding-top="0.5em" keep-together.within-page="always">
-                <xsl:value-of select="upper-case(.)"/>
+            <block  font-size="{cv:font-scale(2)}pt" 
+                margin-top="0.3em" padding-top="0.5em"
+                keep-together.within-page="always">
+                <xsl:choose>
+                    <xsl:when test="matches($fontFamily,'Bembo')">
+                        <xsl:attribute name="font-size" select="cv:font-scale(4)"/>
+                        <xsl:attribute name="font-family">BemboSmallCaps</xsl:attribute>
+                        <xsl:value-of select="lower-case(.)"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:attribute name="font-weight">600</xsl:attribute>
+                        <xsl:value-of select="upper-case(.)"/>
+                    </xsl:otherwise>
+                </xsl:choose> 
+
                 <block>
                     <marker marker-class-name="section">
                         <xsl:value-of select="string(.)"/>
@@ -199,12 +276,26 @@
             keep-together.within-page="always"
             page-break-before="auto"
             page-break-after="avoid" page-break-inside="avoid"
-            margin-top="0.4em"
             margin-bottom="0.3em">
-            <block font-weight="700"
-                font-size="13pt" 
-                padding-top="0.3em" padding-bottom="0.1em" text-decoration="underline" keep-together.within-page="always">
-                <xsl:value-of select="."/>
+            <block 
+                font-size="{cv:font-scale(1)}pt" padding-bottom="0.1em" keep-together.within-page="always">
+                <xsl:choose>
+                    <xsl:when test="matches($fontFamily,'Bembo')">
+                        
+                        <xsl:attribute name="font-family">BemboSmallCaps</xsl:attribute>
+                        <xsl:attribute name="text-decoration">underline</xsl:attribute>
+                        <xsl:attribute name="font-size" select="cv:font-scale(2)"/>
+                 <!--       <xsl:attribute name="font-weight">600</xsl:attribute>-->
+                        <xsl:value-of select="lower-case(.)"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:attribute name="text-decoration">underline</xsl:attribute>
+                        <xsl:attribute name="font-weight">600</xsl:attribute>
+                        <xsl:value-of select="."/>
+                    </xsl:otherwise>
+                </xsl:choose> 
+             
+
             </block>
 <!--            <block margin-top="-0.5em" keep-together.within-page="always">
                 <leader leader-pattern="rule" leader-length="97.5%" rule-style="solid" rule-thickness=".5pt"/>
@@ -213,7 +304,7 @@
     </xsl:template>
     
     <!--Make these tables-->
-    <xsl:template match="*[self::listDegrees | self::listAwards | self::listJobs |  self::listPublications | self::listConferences]" priority="2">
+    <xsl:template match="*[self::listDegrees | self::listAwards | self::listJobs |  self::listPublications | self::listConferences | self::listProjects]" priority="2">
         <xsl:choose>
             <xsl:when test="self::listPublications or self::listConferences and not($allDates = 'true')">
             <xsl:next-match/>
@@ -223,11 +314,16 @@
             or right-->
                 <xsl:variable name="dateCol" select="1"/>
                 
-                <table table-layout="fixed" width="100%" page-break-before="avoid">
+                <table table-layout="fixed" border-collapse="separate" border-spacing="0 0.15em" width="100%" page-break-before="avoid">
                     <xsl:variable name="dateColWidth">
                         <xsl:choose>
                             <xsl:when test="$dateCol=1">
-                                <xsl:value-of select="if (descendant::*[@to or @from]) then 24 else 16"/>
+                                <xsl:sequence select="(18,
+                                        if ($showMonth = 'true' and 
+                                        (some $date in descendant::*[not(@hidden='true')]/(@to, @from, @when) 
+                                            satisfies (cv:hasMonth($date) and not(ancestor::section[@type='service'])))) 
+                                            then 8 else (),
+                                        if (descendant::*[@to or @from]) then 6 else ()) => sum()"/>
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:value-of select="22"/>
@@ -238,14 +334,25 @@
                     <table-column column-number="{$dateCol}" column-width="{$dateColWidth}%"/>
                     <table-column column-number="{if ($dateCol=1) then 2 else 1}" column-width="{98-$dateColWidth}%"/>
                     <table-body>
-                        <xsl:apply-templates select="node()[not(self::head)]">
-                            <xsl:sort select="(@to, @when, date/@to, date/@when, current-date())[1] ! cv:castToDate(.)" order="descending"/>
-                            <xsl:sort select="(@from, date/@from, date/@when, current-date())[1] ! cv:castToDate(.)" order="descending"/>
+                        <xsl:apply-templates select="*[not(self::head)]">
+                            <xsl:sort order="descending">
+                                <xsl:variable name="d" 
+                                    select="(@to, @when, ./date/@to, ./date/@when, role/@to, role/@when, current-date())[1]
+                                    ! cv:castToDate(.)"/>
+                                <xsl:message select="$d"/>
+                                <xsl:sequence select="$d"/>
+                            </xsl:sort>
+                            <xsl:sort order="descending">
+                                <xsl:variable name="d" 
+                                    select="(@from, ./date/@from, ./date/@when, role/@from, role/@when, current-date())[1] 
+                                    ! cv:castToDate(.)"/>
+                                <xsl:message select="$d"/>
+                                <xsl:sequence select="$d"/>
+                            </xsl:sort>
                             <xsl:with-param name="dateCol" select="$dateCol"/>
                         </xsl:apply-templates>
                     </table-body>
                 </table>
-                
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -257,16 +364,37 @@
         </block>
     </xsl:template>
     
+    <xsl:template match="thesis">
+        <block>
+            <inline>Thesis: </inline>
+            <xsl:choose>
+                <xsl:when test="count(node()) gt 1 or not(node()[1]/self::title)">
+                    <xsl:variable name="temp" as="element(cv:title)">
+                        <cv:title level="a">
+                            <xsl:sequence select="node()"/>
+                        </cv:title>
+                    </xsl:variable>
+                    <xsl:apply-templates select="$temp"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </block>
+    </xsl:template>
+    
+    <xsl:template match="note"/>
     
    <xsl:template match="date">
        <xsl:apply-templates/>
    </xsl:template>
-   
+    
     <!--Table rows-->
-    <xsl:template match="award | degree | job | publication | conference" priority="2">
+    <xsl:template match="award | degree | job | project | publication | conference" priority="3">
         <xsl:param name="dateCol"/>
         <xsl:choose>
-            <xsl:when test="self::publication or self::conference and not($allDates = 'true')">
+            <xsl:when test="self::publication or self::conference
+                and not($allDates = 'true')">
                 <xsl:next-match/>
             </xsl:when>
             <xsl:otherwise>
@@ -274,10 +402,10 @@
                     <xsl:variable name="content">
                         <table-cell>
                             <xsl:element name="block">
-                                <xsl:attribute name="padding-top" select="if (self::award[not(hi)]) then .1 else .25 || 'em'"/>
-                                <xsl:attribute name="padding-bottom" select="if (self::award[not(hi)]) then .1 else .25 || 'em'"/>
+<!--                                <xsl:attribute name="padding-top" select="if (self::award[not(hi)]) then .1 else .15 || 'em'"/>-->
+                                <xsl:attribute name="padding-bottom" select="if (self::award[not(hi)]) then .1 else .15 || 'em'"/>
                                 <xsl:choose>
-                                    <xsl:when test="publication | conference">
+                                    <xsl:when test="self::project">
                                         <xsl:next-match/>
                                     </xsl:when>
                                     <xsl:when test="child::* and (every $t in child::text() satisfies not(matches(.,'\S')))">
@@ -293,16 +421,17 @@
                     <xsl:variable name="dateCell">
                         <xsl:variable name="yearRex" select="'^(\d+)(-.+)?$'"/>
                         <table-cell>
-                            <block padding=".1em 0" text-align="left">
+                            <block text-align="left">
+                                <xsl:if test="matches($fontFamily, 'Bembo')">
+                                    <xsl:attribute name="font-size">98%</xsl:attribute>
+                                </xsl:if>
                                 <inline text-align="left">
                                     <xsl:choose>
                                         <xsl:when test="not(@*) and child::date">
                                             <xsl:variable name="year" select="replace(child::date/@when, $yearRex, '$1')"/>
                                             <xsl:value-of select="$year"/>
                                         </xsl:when>
-                                        <xsl:when test="@to and @from and expected[matches(@locus,'(from)|(to)')]">
-                                            <xsl:value-of select="cv:formatSingleDate(@from)"/>–<xsl:value-of select="cv:formatSingleDate(@to)"/><inline font-size="90%"> (expected)</inline>
-                                        </xsl:when>
+                                        
                                         <xsl:when test="ancestor::section[@type='service']">
                                             
                                             <xsl:variable name="fyear" select="replace(@from, $yearRex, '$1')"/>
@@ -324,6 +453,28 @@
                                         </xsl:when>
                                         <xsl:when test="self::degree and (@to and @from)">
                                             <xsl:value-of select="cv:formatSingleDate(@to)"/>
+                                            <xsl:if test="expected[@locus='to']">
+                                                <inline font-size="90%"> (expected)</inline>
+                                            </xsl:if>
+                                        </xsl:when>
+                                        <xsl:when test="self::project and role[@from]">
+                                            <xsl:variable name="role" select="role[@from][1]"/>
+                                            <xsl:variable name="fyear" select="replace($role/@from, $yearRex, '$1')"/>
+                                            <xsl:variable name="tyear" select="replace($role/@to, $yearRex,'$1')"/>
+                                            <xsl:variable name="wyear" select="replace(@when, $yearRex,'$1')"/>
+                                            <xsl:choose>
+                                                <xsl:when test="$role/@to and $role/@from">
+                                                    <xsl:value-of 
+                                                        select="cv:formatDateRange($fyear, $tyear)"/>
+                                                </xsl:when>
+                                                <xsl:when test="$role/@from">
+                                                    <xsl:value-of select="cv:formatSingleDate($fyear)"/>
+                                                    <xsl:text>–present</xsl:text>
+                                                </xsl:when>
+                                                <xsl:otherwise>
+                                                    <xsl:value-of select="cv:formatSingleDate($wyear)"/>
+                                                </xsl:otherwise>
+                                            </xsl:choose>
                                         </xsl:when>
                                         <xsl:when test="@when">
                                             <xsl:value-of select="cv:formatSingleDate(@when)"/>
@@ -335,7 +486,6 @@
                                             <xsl:value-of select="cv:formatSingleDate(@from)"/><xsl:text>–present</xsl:text>
                                         </xsl:when>
                                     </xsl:choose>
-                                    
                                 </inline>
                             </block>
                         </table-cell>
@@ -353,19 +503,37 @@
                     </xsl:choose>
                 </table-row>
             </xsl:otherwise>
-            
         </xsl:choose>
-        
     </xsl:template>
     
+    <xsl:template match="location">
+        <block>
+            <xsl:choose>
+                <xsl:when 
+                    test="@ref and not(some $text in descendant::text() satisfies matches(.,'\S'))">
+                    <xsl:variable name="ptr" select="substring-after(@ref,'#')" as="xs:string"/>
+                    <xsl:variable name="content" 
+                        select="$this//place[@xml:id = $ptr]"
+                        as="element(place)"/>
+                    <xsl:apply-templates select="$content/node()"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </block>
+    </xsl:template>
     
+    <xsl:template match="standoff"/>
     
-    <xsl:template match="degree/name | discipline | institution | class | role | instructor | workplace | job_title">
+    <xsl:template match="degree/name | discipline | class | role | instructor | workplace | job_title">
+        <xsl:param name="comma" select="true()"/>
         <xsl:choose>
             <xsl:when test="$compressed = 'true'">
                 <inline>
                     <xsl:choose>
-                        <xsl:when test="preceding-sibling::*[not(self::expected)]"><xsl:text>, </xsl:text></xsl:when>
+                        <xsl:when test="preceding-sibling::*[not(self::expected)] and $comma"><xsl:text>, </xsl:text></xsl:when>
+                        <xsl:when test="parent::location"/>
                         <xsl:otherwise>
                             <xsl:attribute name="font-weight">700</xsl:attribute>
                         </xsl:otherwise>
@@ -389,20 +557,50 @@
         </block>-->
     </xsl:template>
     
-    <xsl:template match="job/desc">
-        <xsl:if test="$displayDesc='true'">
-            <block text-align="justify" 
-                margin-right="1em" margin-left="1em" padding-top=".3em" padding-right="1.5em">
+    <xsl:template match="job/desc | project/desc">
+        <xsl:if test="$displayDesc = 'true'">
+            <block
+                margin-left="1em" margin-top="2pt" margin-bottom="4pt">
                 <xsl:apply-templates/>
-            </block>
+            </block>  
         </xsl:if>
     </xsl:template>
     
+    
+    <xsl:template match="section[@xml:id='service_other']"/>
 
     
+    <xsl:template match="publication | conference" priority="2">
+        <block padding-bottom=".3em" text-align="justify" page-break-inside="avoid">
+            <xsl:next-match/>
+        </block>
+    </xsl:template>
+    
+  
+    
     <xsl:template match="publication | conference">
-        <block padding-bottom=".5em" margin-left="1.5em" text-indent="-1.5em" margin-right="3em" text-align="justify" page-break-inside="avoid">
-            <xsl:apply-templates/>
+        <xsl:attribute name="margin-left">1.5em</xsl:attribute>
+        <xsl:attribute name="text-indent">-1.5em</xsl:attribute>
+        <xsl:attribute name="margin-right">3em</xsl:attribute>
+        <xsl:apply-templates/>
+    </xsl:template>
+    
+    <!--<xsl:template match="project/desc"/>-->
+    
+    
+    <xsl:template match="project">
+        <block>
+            <xsl:apply-templates select="./role[1]">
+                <xsl:with-param name="comma" select="false()"/>
+            </xsl:apply-templates>
+            <xsl:text>, </xsl:text>
+            <xsl:apply-templates select="project_name"/>
+        </block>
+        <block>
+            <xsl:apply-templates select="./ptr"/>
+        </block>
+        <block>
+            <xsl:apply-templates select="desc"/>
         </block>
     </xsl:template>
     
@@ -436,10 +634,10 @@
     </xsl:template>
     
 
-    <xsl:template match="text()[not(ancestor::title[@level='a'])][preceding::text()[1][ancestor::title[@level='a']]][matches(., '^[,\.]')]">
+    <!--<xsl:template match="text()[not(ancestor::title[@level='a'])][preceding::text()[1][ancestor::title[@level='a']]][matches(., '^[,\.]')]">
         <xsl:value-of select="substring(., 2)"/>
     </xsl:template>
-    
+    -->
 
     
     <xsl:template match="ref[@target]">
@@ -466,20 +664,57 @@
     </xsl:template>
     
     
-    <xsl:template match="listReferences">
+ 
+    
+    <xsl:template match="list">
+        <list-block keep-together.within-page="always" provisional-distance-between-starts="{$fontsize}pt">
+            <xsl:if test="parent::conference">
+                <xsl:attribute name="margin-top" select="'.15em'"/>
+                <xsl:attribute name="margin-bottom" select="'.15em'"/>
+            </xsl:if>
+            <xsl:apply-templates/>
+        </list-block>
+    </xsl:template>
+    
+    <xsl:template match="list/item" priority="2">
+        <list-item>
+            <xsl:attribute name="margin-bottom">
+                <xsl:choose>
+                    <xsl:when test="self::reference">
+                        <xsl:sequence select="$fontsize || 'pt'"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:sequence select="'1pt'"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:attribute>
+            
+            <xsl:if test="ancestor::conference or ancestor::publication">
+                <xsl:attribute name="margin-left" select="'3em'"/>
+            </xsl:if>
+            <list-item-label>
+                <block>•</block>
+            </list-item-label>
+            <list-item-body margin-left="{$fontsize}pt" start-indent="body-start()">
+                <xsl:next-match/>
+            </list-item-body>
+        </list-item>
+    </xsl:template>
+    
+    <xsl:template match="list/item">
+        <block line-height="1.1">
+            <xsl:apply-templates/>
+        </block>
+    </xsl:template>
+    
+    <xsl:template match="listReferences[ancestor::cv][not(reference)]">
+        <xsl:variable name="refDocUri" 
+            select="resolve-uri('./references.xml', document-uri(/))"/>
         <block>
-            <xsl:apply-templates select="head"/>
             <xsl:choose>
-                <xsl:when test="$displayReferences='true'">
+                <xsl:when test="$displayReferences='true' and doc-available($refDocUri)">
                     <!--Then we'll import them externally, I think-->
-                    <!--<xsl:for-each select="reference">
-                        <block padding-top=".6em">
-                            <block><xsl:value-of select="name"/></block>
-                            <block><xsl:value-of select="role"/></block>
-                            <block><xsl:value-of select="email"/></block>
-                            <block><xsl:value-of select="phone"/></block>
-                        </block>
-                    </xsl:for-each>-->
+                    <xsl:apply-templates select="doc($refDocUri)//listReferences"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:text>References available upon request.</xsl:text>
@@ -488,24 +723,29 @@
         </block>
     </xsl:template>
     
-    <xsl:template match="list">
-        <list-block provisional-distance-between-starts="0.6em">
-            <xsl:apply-templates select="item"/>
-        </list-block>
-        
+    <xsl:template match="listReferences">
+        <block-container>
+            <xsl:apply-templates/>
+        </block-container>
     </xsl:template>
     
-    <xsl:template match="list/item">
-        <list-item>
-            <list-item-label>
-                <block>•</block>
-            </list-item-label>
-            <list-item-body start-indent="body-start()">
-                <block>
-                    <xsl:apply-templates/>
-                </block>
-            </list-item-body>
-        </list-item>
+    
+    <xsl:template match="reference">
+        <block keep-together.within-page="always" margin-bottom="{$fontsize}pt" margin-right="1in">
+            <xsl:apply-templates/>
+        </block>
+    </xsl:template>
+    
+    <xsl:template match="reference/name | reference/role">
+        <block>
+            <xsl:apply-templates/>
+        </block>
+    </xsl:template>
+    
+    <xsl:template match="reference/email">
+        <block>
+            <xsl:apply-templates/>
+        </block>
     </xsl:template>
     
     <xsl:template match="ptr">
@@ -515,6 +755,7 @@
     </xsl:template>
     
 <!--    TODO: Templates for references-->
+    
     
     
     

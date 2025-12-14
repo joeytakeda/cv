@@ -5,6 +5,16 @@
     <property name="message" value="'Updating CV.'"/>
     <property name="displayReferences">true</property>
     <property name="displayDesc">true</property>
+    <property name="fontsize" value="12"/>
+    <property name="fontFamily" value="Cormorant Garamond"/>
+    <property name="pageHeight">11.00in</property>
+    <property name="pageWidth">8.5in</property>
+    <property name="marginTop">0.75in</property>
+    <property name="marginBottom">0.75in</property>
+    <property name="marginLeft">0.75in</property>
+    <property name="marginRight">0.75in</property>
+    <property name="showMonth">false</property>
+    <property name="scale" value="major-second"/>
     <property name="source.dir" value="data"/>
     <property name="saxon" value="utilities/saxon-he-10.6.jar"/>
 
@@ -24,7 +34,7 @@
         <format property="date" pattern="yyyy-MM-dd" locale="en"/>
     </tstamp>
 
-    <property name="fop.home" value="${basedir}/utilities/fop-2.0"/>
+    <property name="fop.home" value="${basedir}/utilities/fop-2.11/fop"/>
 
     <taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
         <classpath>
@@ -32,8 +42,7 @@
                 <include name="*.jar"/>
             </fileset>
             <fileset dir="${fop.home}/build">
-                <include name="fop.jar"/>
-                <include name="fop-hyph.jar"/>
+                <include name="*.jar"/>
             </fileset>
         </classpath>
     </taskdef>
@@ -85,18 +94,41 @@
             <arg value="date=${date}"/>
             <arg value="displayReferences=${displayReferences}"/>
             <arg value="displayDesc=${displayDesc}"/>
+            <arg value="fontsize=${fontsize}"/>
+            <arg value="scale=${scale}"/>
+            <arg value="fontFamily=${fontFamily}"/>
+            <arg value="pageHeight=${pageHeight}"/>
+            <arg value="pageWidth=${pageWidth}"/>
+            <arg value="marginTop=${marginTop}"/>
+            <arg value="marginBottom=${marginBottom}"/>
+            <arg value="marginLeft=${marginLeft}"/>
+            <arg value="marginRight=${marginRight}"/>
+            <arg value="showMonth=${showMonth}"/>
             <arg value="--suppressXsltNamespaceCheck:on"/>
         </java>
         <property name="foPath" location="${fo}"/>
         <fop format="application/pdf" fofile="${foPath}" outfile="${pdf}"
-            userconfig="${basedir}/utilities/fop-2.0/conf/fop.xconf"/>
+            userconfig="${basedir}/utilities/fop.xconf"/>
     </target>
 
-
+    <target name="list-fonts">
+        <java classname="org.apache.fop.tools.fontlist.FontListMain">
+            <classpath>
+                <fileset dir="${fop.home}/lib">
+                    <include name="*.jar"/>
+                </fileset>
+                <fileset dir="${fop.home}/build">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+            <arg line="-c ${basedir}/utilities/fop.xconf"/>
+        </java>
+        
+    </target>
     <target name="all">
         <antcall target="init"/>
-        <antcall target="xhtml"/>
-        <antcall target="tei"/>
+<!--        <antcall target="xhtml"/>
+        <antcall target="tei"/>-->
         <antcall target="pdf"/>
     </target>
 </project>

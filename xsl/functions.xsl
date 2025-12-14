@@ -4,11 +4,31 @@
     xmlns:math="http://www.w3.org/2005/xpath-functions/math"
     exclude-result-prefixes="xs math"
     xmlns:cv="http://joeytakeda.github.io/ns/"
+    xmlns:map="http://www.w3.org/2005/xpath-functions/map"
     version="3.0">
-
+    
+    <xsl:param name="fontsize" select="12"/>
+    <xsl:param name="scale" select="'minor-second'" as="xs:string"/>
+    
+    <xsl:variable name="scales" as="map(xs:string, xs:decimal)" select="map{
+        'minor-second': 1.067,
+        'major-second': 1.125,
+        'minor-third':  1.2,
+        'major-third': 1.25,
+        'perfect-fourth': (4 div 3),
+        'phi': 1.618
+        }"/>
+    
+    <xsl:function name="cv:hasMonth">
+        <xsl:param name="in"/>
+        <xsl:variable name="tokens" select="cv:getDateTokens($in)"/>
+        <xsl:sequence select="count($tokens) gt 1"/>
+    </xsl:function>
     
     <xsl:function name="cv:formatSingleDate">
-        <xsl:param name="string"/>
+        <xsl:param name="in"/>
+        <xsl:variable name="string" 
+            select="if ($showMonth = 'false') then tokenize($in,'-')[1] else $in"/>
        <!-- <xsl:message>Formatting this date <xsl:value-of select="$string"/></xsl:message>-->
         <xsl:variable name="dateTokens" select="cv:getDateTokens($string)"/>
         <xsl:variable name="tCount" select="count($dateTokens)"/>
@@ -92,6 +112,18 @@
                 <xsl:sequence select="string-join(subsequence($seq,1,3),'-') => xs:date()"/>
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:function>
+    
+    <!--We assume three levels of heading-->
+    <xsl:function name="cv:font-scale">
+        <xsl:param name="level" as="xs:decimal"/>
+        <xsl:variable name="currScale" select="map:get($scales, $scale)" as="xs:decimal?"/>
+        <xsl:if test="not($currScale)">
+            <xsl:message terminate="yes">NO SCALE SPECIFIED. PICK ONE OF <xsl:sequence select="map:keys($scales) => string-join(' ')"/></xsl:message>
+        </xsl:if>
+        <xsl:message select="math:pow($currScale, $level) * $fontsize"/>
+        <xsl:sequence select="math:pow($currScale, $level) * $fontsize"/>
+        
     </xsl:function>
     
 </xsl:stylesheet>
