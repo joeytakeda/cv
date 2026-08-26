@@ -35,7 +35,7 @@
                 <elementRef key="website" minOccurs="0"/>
               </sequence>
               <elementRef key="section" minOccurs="1" maxOccurs="unbounded"/>
-              
+              <elementRef key="standoff"/>
             </sequence>
 
           </content>
@@ -47,9 +47,25 @@
             <memberOf key="cv.att.global"/>
           </classes>
           <content>
-            <macroRef key="cv.mixedContent"/>
+            <alternate minOccurs="0" maxOccurs="unbounded">
+              <elementRef key="forename"/>
+              <elementRef key="surname"/>
+              <macroRef key="cv.mixedContent"/>
+            </alternate>
+           
           </content>
         </elementSpec>
+        <elementSpec ident="forename">
+          <content>
+            <textNode/>
+          </content>
+        </elementSpec>
+        <elementSpec ident="surname">
+          <content>
+            <textNode/>
+          </content>
+        </elementSpec>
+        
         <elementSpec ident="email">
           <classes>
             <memberOf key="cv.att.global"/>
@@ -96,13 +112,18 @@
         <elementSpec ident="section" module="cv">
           <desc>an arbitrary section</desc>
           <gloss>a section of the CV.</gloss>
+          <classes>
+            <memberOf key="cv.att.global"/>
+            <memberOf key="cv.att.hideable"/>
+          </classes>
           <content>
-            <elementRef key="head"/>
-            <alternate>
-              <elementRef key="section" maxOccurs="unbounded"/>
-              <classRef key="cv.model.listLike" minOccurs="0" maxOccurs="1"/>
-            </alternate>
-
+            <sequence>
+              <elementRef key="head"/>
+              <sequence>
+                <classRef key="cv.model.listLike" minOccurs="0" maxOccurs="1"/>
+                <elementRef key="section" minOccurs="0" maxOccurs="unbounded"/>
+              </sequence>
+            </sequence>
           </content>
           <attList>
             <attDef ident="type" usage="rec">
@@ -125,26 +146,30 @@
         </elementSpec>
         
         <elementSpec ident="head">
+          <classes>
+            <memberOf key="cv.att.global"/>
+          </classes>
           <content>
             <textNode/>
           </content>
         </elementSpec>
         
-        <elementSpec ident="degree">
+       
+        
+        <elementSpec ident="thesis">
           <classes>
-            <memberOf key="cv.att.datable"/>
+            <memberOf key="cv.att.global"/>
           </classes>
           <content>
-            <sequence>
-              <elementRef key="expected" minOccurs="0"/>
-              <elementRef key="name"/>
-              <elementRef key="discipline" minOccurs="0"/>
-              <elementRef key="institution"/>
-            </sequence>
+            <macroRef key="cv.mixedContent"/>
           </content>
         </elementSpec>
         
         <elementSpec ident="expected" module="cv">
+          
+          <classes>
+            <memberOf key="cv.att.global"/>
+          </classes>
           <content>
             <empty/>
           </content>
@@ -159,12 +184,39 @@
         </elementSpec>
         
         <elementSpec ident="discipline">
+          <classes>
+            <memberOf key="cv.att.global"/>
+          </classes>
           <content>
             <textNode/>
           </content>
         </elementSpec>
         
+        <elementSpec ident="location">
+          <classes>
+            <memberOf key="cv.att.global"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+          <attList>
+            <attDef ident="ref">
+              <datatype>
+                <dataRef name="anyURI">
+                  <dataFacet name="pattern" value="#\S+"/>
+                </dataRef>
+              </datatype>
+            </attDef>
+          </attList>
+        </elementSpec>
+        
+        
+        
         <elementSpec ident="institution">
+          <classes>
+            <memberOf key="cv.mixedContent"/>
+            <memberOf key="cv.att.global"/>
+          </classes>
           <content>
             <textNode/>
           </content>
@@ -181,7 +233,8 @@
         
         <elementSpec ident="job">
           <classes>
-            <memberOf key="cv.att.datable"/>
+            <memberOf key="cv.model.itemLike"/>
+            <memberOf key="cv.atts.iterable"/>
           </classes>
           <content>
             <alternate minOccurs="0" maxOccurs="unbounded">
@@ -191,9 +244,10 @@
               <elementRef key="desc"/>
               <elementRef key="job_title"/>
               <elementRef key="workplace"/>
+              <elementRef key="location"/>
             </alternate>
           </content>
-          <constraintSpec ident="jobsNeedMonth" scheme="schematron">
+<!--          <constraintSpec ident="jobsNeedMonth" scheme="schematron">
             <constraint>
               <sch:pattern>
                 <sch:rule context="jt:job[@from]| jt:job[@to]">
@@ -204,11 +258,12 @@
                 </sch:rule>
               </sch:pattern>
             </constraint>
-          </constraintSpec>
+          </constraintSpec>-->
         </elementSpec>
         
         <elementSpec ident="ptr" module="cv">
           <classes>
+            <memberOf key="cv.att.global"/>
             <memberOf key="cv.mixedContent"/>
           </classes>
           <attList>
@@ -220,7 +275,74 @@
           </attList>
         </elementSpec>
         
+        <elementSpec ident="listProjects">
+          <classes>
+            <memberOf key="cv.model.listLike"/>
+          </classes>
+          <content>
+            <elementRef key="project" maxOccurs="unbounded"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="project">
+          <classes>
+            <memberOf key="cv.model.itemLike"/>
+            <memberOf key="cv.atts.iterable"/>
+          </classes>
+          <content>
+            <alternate minOccurs="0" maxOccurs="unbounded">
+              <elementRef key="project_name"/>
+              <elementRef key="ptr"/>
+              <elementRef key="PI"/>
+              <elementRef key="role" minOccurs="1" maxOccurs="unbounded"/>
+              <elementRef key="desc" minOccurs="0"/>
+              <elementRef key="location" minOccurs="0"/>
+            </alternate>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="standoff">
+           <content>
+             <elementRef key="listPlace"/>
+           </content> 
+        </elementSpec>
+        
+        <elementSpec ident="listPlace">
+          <content>
+            <elementRef key="place" minOccurs="0" maxOccurs="unbounded"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="place">
+           <classes>
+             <memberOf key="cv.att.global"/>
+           </classes>
+           <content>
+             <macroRef key="cv.mixedContent"/>
+           </content>
+        </elementSpec>
+        
+        <elementSpec ident="project_name">
+          <classes>
+            <memberOf key="cv.att.global"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        
+   
+        
+        <elementSpec ident="PI">
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        
         <elementSpec ident="role" module="cv">
+          <classes>
+            <memberOf key="cv.att.datable"/>
+          </classes>
           <content>
             <macroRef key="cv.mixedContent"/>
           </content>
@@ -231,12 +353,26 @@
             <macroRef key="cv.mixedContent"/>
           </content>
         </elementSpec>
+        
         <elementSpec ident="supervisor" module="cv">
           <content>
             <macroRef key="cv.mixedContent"/>
           </content>
         </elementSpec>
         <elementSpec ident="desc" module="cv">
+          <classes>
+            <memberOf key="cv.att.hidable"/>
+          </classes>
+          <content>
+            <alternate>
+              <macroRef key="cv.mixedContent"/>
+              <elementRef key="p" minOccurs="1" maxOccurs="unbounded"/>
+            </alternate>
+
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="p">
           <content>
             <macroRef key="cv.mixedContent"/>
           </content>
@@ -310,12 +446,47 @@
           </content>
         </elementSpec>
         
+        <elementSpec ident="list">
+          <classes>
+            <memberOf key="cv.model.listLike"/>
+          </classes>
+          <content>
+            <elementRef key="item" minOccurs="1" maxOccurs="unbounded"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="item">
+          <classes>
+            <memberOf key="cv.model.itemLike"/>
+            <memberOf key="cv.atts.iterable"/>
+          </classes>
+          <content>
+            <macroRef key="cv.mixedContent"/>
+          </content>
+        </elementSpec>
+        
         <elementSpec ident="listDegrees">
           <classes>
             <memberOf key="cv.model.listLike"/>
           </classes>
           <content>
             <elementRef key="degree" minOccurs="1" maxOccurs="unbounded"/>
+          </content>
+        </elementSpec>
+        
+        <elementSpec ident="degree">
+          <classes>
+            <memberOf key="cv.model.itemLike"/>
+            <memberOf key="cv.atts.iterable"/>
+          </classes>
+          <content>
+            <sequence>
+              <elementRef key="expected" minOccurs="0"/>
+              <elementRef key="name"/>
+              <elementRef key="discipline" minOccurs="0"/>
+              <elementRef key="location"/>
+              <elementRef key="thesis" minOccurs="0"/>
+            </sequence>
           </content>
         </elementSpec>
         
@@ -338,18 +509,35 @@
           </content>
         </elementSpec>
         
+       
+        
         <elementSpec ident="conference">
           <classes>
-            <memberOf key="cv.att.datable"/>
+            <memberOf key="cv.model.itemLike"/>
+            <memberOf key="cv.atts.iterable"/>
           </classes>
           <content>
             <macroRef key="cv.mixedContent"/>
           </content>
+          <attList>
+            <attDef ident="type">
+              <valList type="closed">
+                <valItem ident="paper"/>
+                <valItem ident="poster"/>
+              </valList>
+            </attDef>
+            <attDef ident="refereed">
+              <datatype>
+                <dataRef name="boolean"/>
+              </datatype>
+            </attDef>
+          </attList>
         </elementSpec>
         
         <elementSpec ident="publication">
           <classes>
-            <memberOf key="cv.att.datable"/>
+            <memberOf key="cv.model.itemLike"/>
+            <memberOf key="cv.atts.iterable"/>
           </classes>
           <content>
             <macroRef key="cv.mixedContent"/>
@@ -358,7 +546,8 @@
         
         <elementSpec ident="award">
           <classes>
-            <memberOf key="cv.att.datable"/>
+            <memberOf key="cv.model.itemLike"/>
+            <memberOf key="cv.atts.iterable"/>
           </classes>
           <content>
             <macroRef key="cv.mixedContent"/>
@@ -382,15 +571,18 @@
           </attList>
         </elementSpec>
         
-        <elementSpec ident="list">
+        <elementSpec ident="q">
           <content>
-            <elementRef key="item" minOccurs="1" maxOccurs="unbounded"/>
+            <macroRef key="cv.mixedContent"/>
           </content>
         </elementSpec>
         
-        <elementSpec ident="item">
+        <elementSpec ident="date">
+          <classes>
+            <memberOf key="cv.att.datable"/>
+          </classes>
           <content>
-            <macroRef key="cv.mixedContent"/>
+            <textNode/>
           </content>
         </elementSpec>
 
@@ -405,6 +597,16 @@
             </attDef>
             <attDef ident="when">
               <datatype><dataRef key="cvdata.temporal.w3c"/></datatype>
+            </attDef>
+            <attDef ident="notBefore">
+              <datatype>
+                <dataRef key="cvdata.temporal.w3c"/>
+              </datatype>
+            </attDef>
+            <attDef ident="notAfter">
+              <datatype>
+                <dataRef key="cvdata.temporal.w3c"/>
+              </datatype>
             </attDef>
           </attList>
         </classSpec>
@@ -435,6 +637,9 @@
                 <elementRef key="ref"/>
                 <elementRef key="hi"/>
                 <elementRef key="ptr"/>
+                <elementRef key="institution"/>
+                <elementRef key="date"/>
+                <elementRef key="q"/>
               </alternate>
           </content>
         </macroSpec>
@@ -451,14 +656,33 @@
                 <dataRef key="teidata.text"/>
               </datatype>
             </attDef>
+            
           </attList>
         </classSpec>
-        
         <classSpec ident="cv.model.listLike" type="model" module="cv">
           <desc>groups elements that are like lists</desc>
+        </classSpec>
+        
+        <classSpec ident="cv.model.itemLike" type="model" module="cv">
+          <desc>groups elements are that like items</desc>
+        </classSpec>
+
+        <classSpec ident="cv.atts.iterable" type="atts" module="cv">
           <classes>
             <memberOf key="cv.att.global"/>
+            <memberOf key="cv.att.datable"/>
+            <memberOf key="cv.att.hideable"/>
           </classes>
+        </classSpec>
+        
+        <classSpec ident="cv.att.hideable" type="atts" module="cv">
+          <attList>
+            <attDef ident="hidden">
+              <datatype>
+                <dataRef name="boolean"/>
+              </datatype>
+            </attDef>
+          </attList>
         </classSpec>
         
         <constraintSpec ident="addNs" scheme="schematron">

@@ -617,10 +617,10 @@
     </xsl:template>
     
 
-    <xsl:template match="title[@level='a']">
+    <xsl:template match="*[cv:isQuoted(.)]">
         <xsl:variable name="lq" select="('“', '‘')"/>
         <xsl:variable name="rq" select="('”','’')"/>
-        <xsl:variable name="level" select="(count(ancestor::title[@level='a']) mod 2) + 1"/>
+        <xsl:variable name="level" select="(count(ancestor::*[cv:isQuoted(.)]) mod 2) + 1"/>
         <inline>
             <inline><xsl:value-of select="$lq[$level]"/></inline>
             <inline>
@@ -756,7 +756,10 @@
     
 <!--    TODO: Templates for references-->
     
-    
+    <xsl:function name="cv:isQuoted" as="xs:boolean">
+        <xsl:param name="el"/>
+        <xsl:sequence select="$el/self::title[@level='a'] or $el/self::q"/>
+    </xsl:function>
     
     
    

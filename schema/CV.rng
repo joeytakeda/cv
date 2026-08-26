@@ -1,14 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
          xmlns:tei="http://www.tei-c.org/ns/1.0"
          xmlns:teix="http://www.tei-c.org/ns/Examples"
          xmlns:xlink="http://www.w3.org/1999/xlink"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
          ns="http://joeytakeda.github.io/ns/"><!--
-Schema generated from ODD source 2023-05-16T04:48:16Z. .
-TEI Edition: Version 4.4.0. Last updated on
-        19th April 2022, revision ff9cc28b0
-TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
+Schema generated from ODD source 2026-08-26T16:54:17Z. . 
+TEI Edition: P5 Version 4.8.1. Last updated on 1st November 2024, revision 0a2bff95a 
+TEI Edition Location: https://www.tei-c.org/Vault/P5/4.8.1/ 
   
 --><!---->
    <sch:ns xmlns:sch="http://purl.oclc.org/dsdl/schematron"
@@ -23,6 +22,9 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
             <ref name="ref"/>
             <ref name="hi"/>
             <ref name="ptr"/>
+            <ref name="institution"/>
+            <ref name="date"/>
+            <ref name="q"/>
          </choice>
       </zeroOrMore>
    </define>
@@ -32,7 +34,7 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
          <group>
             <ref name="name"/>
             <ref name="email"/>
-            <group>
+            <interleave>
                <optional>
                   <ref name="phone"/>
                </optional>
@@ -45,19 +47,38 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
                <optional>
                   <ref name="website"/>
                </optional>
-            </group>
+            </interleave>
             <oneOrMore>
                <ref name="section"/>
             </oneOrMore>
+            <ref name="standoff"/>
          </group>
       </element>
    </define>
    <define name="name">
       <element name="name">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
-         <ref name="cv.mixedContent"/>
+         <zeroOrMore>
+            <choice>
+               <ref name="forename"/>
+               <ref name="surname"/>
+               <ref name="cv.mixedContent"/>
+            </choice>
+         </zeroOrMore>
          <ref name="cv.att.global.attributes"/>
          <empty/>
+      </element>
+   </define>
+   <define name="forename">
+      <element name="forename">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <text/>
+      </element>
+   </define>
+   <define name="surname">
+      <element name="surname">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <text/>
       </element>
    </define>
    <define name="email">
@@ -103,15 +124,19 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
    <define name="section">
       <element name="section">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(a section of the CV.) an arbitrary section</a:documentation>
-         <ref name="head"/>
-         <choice>
-            <oneOrMore>
-               <ref name="section"/>
-            </oneOrMore>
-            <optional>
-               <ref name="cv.model.listLike"/>
-            </optional>
-         </choice>
+         <group>
+            <ref name="head"/>
+            <group>
+               <optional>
+                  <ref name="cv.model.listLike"/>
+               </optional>
+               <zeroOrMore>
+                  <ref name="section"/>
+               </zeroOrMore>
+            </group>
+         </group>
+         <ref name="cv.att.global.attributes"/>
+         <ref name="cv.att.hideable.attributes"/>
          <optional>
             <attribute name="type">
                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
@@ -124,22 +149,15 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
       <element name="head">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <text/>
+         <ref name="cv.att.global.attributes"/>
+         <empty/>
       </element>
    </define>
-   <define name="degree">
-      <element name="degree">
+   <define name="thesis">
+      <element name="thesis">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
-         <group>
-            <optional>
-               <ref name="expected"/>
-            </optional>
-            <ref name="name"/>
-            <optional>
-               <ref name="discipline"/>
-            </optional>
-            <ref name="institution"/>
-         </group>
-         <ref name="cv.att.datable.attributes"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.global.attributes"/>
          <empty/>
       </element>
    </define>
@@ -147,6 +165,7 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
       <element name="expected">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <empty/>
+         <ref name="cv.att.global.attributes"/>
          <attribute name="locus">
             <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          </attribute>
@@ -157,12 +176,32 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
       <element name="discipline">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <text/>
+         <ref name="cv.att.global.attributes"/>
+         <empty/>
+      </element>
+   </define>
+   <define name="location">
+      <element name="location">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.global.attributes"/>
+         <optional>
+            <attribute name="ref">
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+               <data type="anyURI">
+                  <param name="pattern">#\S+</param>
+               </data>
+            </attribute>
+         </optional>
+         <empty/>
       </element>
    </define>
    <define name="institution">
       <element name="institution">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <text/>
+         <ref name="cv.att.global.attributes"/>
+         <empty/>
       </element>
    </define>
    <define name="listJobs">
@@ -184,22 +223,10 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
                <ref name="desc"/>
                <ref name="job_title"/>
                <ref name="workplace"/>
+               <ref name="location"/>
             </choice>
          </zeroOrMore>
-         <sch:pattern xmlns="http://www.tei-c.org/ns/1.0"
-                      xmlns:jt="http://joeytakeda.github.io/ns/"
-                      xmlns:math="http://www.w3.org/1998/Math/MathML"
-                      xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-                      xmlns:svg="http://www.w3.org/2000/svg"
-                      xmlns:xi="http://www.w3.org/2001/XInclude">
-            <sch:rule context="jt:job[@from]| jt:job[@to]">
-               <sch:let name="fromTokens" value="tokenize(@from,'-')"/>
-               <sch:assert test="every $q in  (@from | @to) satisfies count(tokenize($q,'-')) gt 1">
-                    ERROR: All job dates should include the month.
-                  </sch:assert>
-            </sch:rule>
-         </sch:pattern>
-         <ref name="cv.att.datable.attributes"/>
+         <ref name="cv.atts.iterable.attributes"/>
          <empty/>
       </element>
    </define>
@@ -207,6 +234,7 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
       <element name="ptr">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <empty/>
+         <ref name="cv.att.global.attributes"/>
          <optional>
             <attribute name="target">
                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
@@ -216,10 +244,79 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
          <empty/>
       </element>
    </define>
+   <define name="listProjects">
+      <element name="listProjects">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <oneOrMore>
+            <ref name="project"/>
+         </oneOrMore>
+      </element>
+   </define>
+   <define name="project">
+      <element name="project">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <zeroOrMore>
+            <choice>
+               <ref name="project_name"/>
+               <ref name="ptr"/>
+               <ref name="PI"/>
+               <oneOrMore>
+                  <ref name="role"/>
+               </oneOrMore>
+               <optional>
+                  <ref name="desc"/>
+               </optional>
+               <optional>
+                  <ref name="location"/>
+               </optional>
+            </choice>
+         </zeroOrMore>
+         <ref name="cv.atts.iterable.attributes"/>
+         <empty/>
+      </element>
+   </define>
+   <define name="standoff">
+      <element name="standoff">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="listPlace"/>
+      </element>
+   </define>
+   <define name="listPlace">
+      <element name="listPlace">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <zeroOrMore>
+            <ref name="place"/>
+         </zeroOrMore>
+      </element>
+   </define>
+   <define name="place">
+      <element name="place">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.global.attributes"/>
+         <empty/>
+      </element>
+   </define>
+   <define name="project_name">
+      <element name="project_name">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.att.global.attributes"/>
+         <empty/>
+      </element>
+   </define>
+   <define name="PI">
+      <element name="PI">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+      </element>
+   </define>
    <define name="role">
       <element name="role">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <ref name="cv.mixedContent"/>
+         <ref name="cv.att.datable.attributes"/>
+         <empty/>
       </element>
    </define>
    <define name="class">
@@ -236,6 +333,17 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
    </define>
    <define name="desc">
       <element name="desc">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <choice>
+            <ref name="cv.mixedContent"/>
+            <oneOrMore>
+               <ref name="p"/>
+            </oneOrMore>
+         </choice>
+      </element>
+   </define>
+   <define name="p">
+      <element name="p">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <ref name="cv.mixedContent"/>
       </element>
@@ -305,12 +413,48 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
          </oneOrMore>
       </element>
    </define>
+   <define name="list">
+      <element name="list">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <oneOrMore>
+            <ref name="item"/>
+         </oneOrMore>
+      </element>
+   </define>
+   <define name="item">
+      <element name="item">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <ref name="cv.mixedContent"/>
+         <ref name="cv.atts.iterable.attributes"/>
+         <empty/>
+      </element>
+   </define>
    <define name="listDegrees">
       <element name="listDegrees">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <oneOrMore>
             <ref name="degree"/>
          </oneOrMore>
+      </element>
+   </define>
+   <define name="degree">
+      <element name="degree">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <group>
+            <optional>
+               <ref name="expected"/>
+            </optional>
+            <ref name="name"/>
+            <optional>
+               <ref name="discipline"/>
+            </optional>
+            <ref name="location"/>
+            <optional>
+               <ref name="thesis"/>
+            </optional>
+         </group>
+         <ref name="cv.atts.iterable.attributes"/>
+         <empty/>
       </element>
    </define>
    <define name="listPublications">
@@ -333,7 +477,24 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
       <element name="conference">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <ref name="cv.mixedContent"/>
-         <ref name="cv.att.datable.attributes"/>
+         <ref name="cv.atts.iterable.attributes"/>
+         <optional>
+            <attribute name="type">
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+               <choice>
+                  <value>paper</value>
+                  <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+                  <value>poster</value>
+                  <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+               </choice>
+            </attribute>
+         </optional>
+         <optional>
+            <attribute name="refereed">
+               <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+               <data type="boolean"/>
+            </attribute>
+         </optional>
          <empty/>
       </element>
    </define>
@@ -341,7 +502,7 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
       <element name="publication">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <ref name="cv.mixedContent"/>
-         <ref name="cv.att.datable.attributes"/>
+         <ref name="cv.atts.iterable.attributes"/>
          <empty/>
       </element>
    </define>
@@ -349,7 +510,7 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
       <element name="award">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <ref name="cv.mixedContent"/>
-         <ref name="cv.att.datable.attributes"/>
+         <ref name="cv.atts.iterable.attributes"/>
          <empty/>
       </element>
    </define>
@@ -366,24 +527,26 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
          <empty/>
       </element>
    </define>
-   <define name="list">
-      <element name="list">
-         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
-         <oneOrMore>
-            <ref name="item"/>
-         </oneOrMore>
-      </element>
-   </define>
-   <define name="item">
-      <element name="item">
+   <define name="q">
+      <element name="q">
          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
          <ref name="cv.mixedContent"/>
+      </element>
+   </define>
+   <define name="date">
+      <element name="date">
+         <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+         <text/>
+         <ref name="cv.att.datable.attributes"/>
+         <empty/>
       </element>
    </define>
    <define name="cv.att.datable.attributes">
       <ref name="cv.att.datable.attribute.to"/>
       <ref name="cv.att.datable.attribute.from"/>
       <ref name="cv.att.datable.attribute.when"/>
+      <ref name="cv.att.datable.attribute.notBefore"/>
+      <ref name="cv.att.datable.attribute.notAfter"/>
    </define>
    <define name="cv.att.datable.attribute.to">
       <optional>
@@ -436,6 +599,40 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
          </attribute>
       </optional>
    </define>
+   <define name="cv.att.datable.attribute.notBefore">
+      <optional>
+         <attribute name="notBefore">
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+            <choice>
+               <data type="date"/>
+               <data type="gYear"/>
+               <data type="gMonth"/>
+               <data type="gDay"/>
+               <data type="gYearMonth"/>
+               <data type="gMonthDay"/>
+               <data type="time"/>
+               <data type="dateTime"/>
+            </choice>
+         </attribute>
+      </optional>
+   </define>
+   <define name="cv.att.datable.attribute.notAfter">
+      <optional>
+         <attribute name="notAfter">
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+            <choice>
+               <data type="date"/>
+               <data type="gYear"/>
+               <data type="gMonth"/>
+               <data type="gDay"/>
+               <data type="gYearMonth"/>
+               <data type="gMonthDay"/>
+               <data type="time"/>
+               <data type="dateTime"/>
+            </choice>
+         </attribute>
+      </optional>
+   </define>
    <define name="cv.att.global.attributes">
       <ref name="cv.att.global.attribute.xmlid"/>
       <ref name="cv.att.global.attribute.n"/>
@@ -458,12 +655,30 @@ TEI Edition Location: https://www.tei-c.org/Vault/P5/Version 4.4.0/
    <define name="cv.model.listLike">
       <choice>
          <ref name="listJobs"/>
+         <ref name="listProjects"/>
          <ref name="listReferences"/>
          <ref name="listAwards"/>
+         <ref name="list"/>
          <ref name="listDegrees"/>
          <ref name="listPublications"/>
          <ref name="listConferences"/>
       </choice>
+   </define>
+   <define name="cv.atts.iterable.attributes">
+      <ref name="cv.att.global.attributes"/>
+      <ref name="cv.att.datable.attributes"/>
+      <ref name="cv.att.hideable.attributes"/>
+   </define>
+   <define name="cv.att.hideable.attributes">
+      <ref name="cv.att.hideable.attribute.hidden"/>
+   </define>
+   <define name="cv.att.hideable.attribute.hidden">
+      <optional>
+         <attribute name="hidden">
+            <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+            <data type="boolean"/>
+         </attribute>
+      </optional>
    </define>
    <start>
       <choice>
