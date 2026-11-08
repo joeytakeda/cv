@@ -27,18 +27,19 @@
     
     <xsl:function name="cv:formatSingleDate">
         <xsl:param name="in"/>
+        <xsl:param name="displayMonth" as="xs:string"/>
         <xsl:variable name="string" 
-            select="if ($showMonth = 'false') then tokenize($in,'-')[1] else $in"/>
-       <!-- <xsl:message>Formatting this date <xsl:value-of select="$string"/></xsl:message>-->
+            select="if ($displayMonth = 'false') then tokenize($in,'-')[1] else $in"/>
+        <!-- <xsl:message>Formatting this date <xsl:value-of select="$string"/></xsl:message>-->
         <xsl:variable name="dateTokens" select="cv:getDateTokens($string)"/>
         <xsl:variable name="tCount" select="count($dateTokens)"/>
         
         <xsl:choose>
-      
+            
             <!--When we want to display the month AND we have a year and month-->
             <xsl:when test="$tCount gt 1">
                 <xsl:variable name="month" select="$dateTokens[2]"/>
-              
+                
                 <xsl:variable name="monthAbbr">
                     <!--Following Chicago style-->
                     <xsl:choose>
@@ -59,27 +60,34 @@
                 <xsl:variable name="out">
                     <xsl:value-of select="$monthAbbr"/><xsl:if test="$tCount=3"><xsl:text> </xsl:text><xsl:value-of select="$dateTokens[3]"/><xsl:text>,</xsl:text></xsl:if><xsl:text> </xsl:text><xsl:value-of select="$dateTokens[1]"/>
                 </xsl:variable>
-               <xsl:value-of select="$out"/>
+                <xsl:value-of select="$out"/>
             </xsl:when>
             <xsl:when test="$tCount=1">
                 <xsl:value-of select="$dateTokens[1]"/>
             </xsl:when>
         </xsl:choose>
+        
+    </xsl:function>
+    
+    <xsl:function name="cv:formatSingleDate">
+        <xsl:param name="in"/>
+        <xsl:sequence select="cv:formatSingleDate($in, $showMonth)"/>
     </xsl:function>
     
     <xsl:function name="cv:formatDateRange">
         <xsl:param name="string1" as="xs:string"/>
         <xsl:param name="string2" as="xs:string"/>
-       <!-- <xsl:message>Testing range: <xsl:value-of select="$string1"/> and <xsl:value-of select="$string2"/></xsl:message>-->
+        <xsl:param name="showSquareBrackets" as="xs:boolean"/>
+        <!-- <xsl:message>Testing range: <xsl:value-of select="$string1"/> and <xsl:value-of select="$string2"/></xsl:message>-->
         <xsl:variable name="date1" select="cv:formatSingleDate($string1)"/>
         <xsl:variable name="date2" select="cv:formatSingleDate($string2)"/>
         <xsl:variable name="date1Tokens" select="cv:getDateTokens($string1)"/>
         <xsl:variable name="date2Tokens" select="cv:getDateTokens($string2)"/>
         <xsl:variable name="year1" select="$date1Tokens[1]"/>
         <xsl:variable name="year2" select="$date2Tokens[1]"/>
-    <!--    <xsl:message>date1: <xsl:value-of select="$date1"/> / year1: <xsl:value-of select="$year1"/></xsl:message>
+        <!--    <xsl:message>date1: <xsl:value-of select="$date1"/> / year1: <xsl:value-of select="$year1"/></xsl:message>
         <xsl:message>date2: <xsl:value-of select="$date2"/> / year2: <xsl:value-of select="$year2"/></xsl:message>-->
-<!--        <xsl:message>Does year1 = year 2? <xsl:value-of select="$year1=$year2"/></xsl:message>-->
+        <!--        <xsl:message>Does year1 = year 2? <xsl:value-of select="$year1=$year2"/></xsl:message>-->
         <xsl:choose>
             <xsl:when test="$date1 = $date2">
                 <xsl:value-of select="$date2"/>
@@ -88,9 +96,24 @@
                 <xsl:value-of select="normalize-space(substring-before($date1,$year1))"/><xsl:text>–</xsl:text><xsl:value-of select="$date2"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="$date1"/><xsl:text>–</xsl:text><xsl:value-of select="$date2"/>
+                <xsl:value-of select="$date1"/><xsl:text>–</xsl:text>
+                <xsl:choose>
+                    <xsl:when test="$showSquareBrackets and year-from-date(cv:castToDate($string2)) gt year-from-date(current-date())">
+                        <xsl:value-of select="'[' || $date2 || ']'"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="$date2"/>
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:otherwise>
         </xsl:choose>
+        
+    </xsl:function>
+    
+    <xsl:function name="cv:formatDateRange">
+        <xsl:param name="string1" as="xs:string"/>
+        <xsl:param name="string2" as="xs:string"/>
+        <xsl:sequence select="cv:formatDateRange($string1, $string2, true())"/>
     </xsl:function>
     
     <xsl:function name="cv:getDateTokens">

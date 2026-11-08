@@ -19,7 +19,8 @@ the location of this file.
   <base>.</base>
   
  
-  
+  <!--We need to remove complex scripts to enable actual searching etc-->
+  <complex-scripts disabled="true"/>
   
   
   <!-- Source resolution in dpi (dots/pixels per inch) for determining the size of pixels in SVG and bitmap images, default: 72dpi -->
@@ -29,7 +30,7 @@ the location of this file.
   
   <!-- Default page-height and page-width, in case value is specified as auto -->
   <default-page-settings height="11.00in" width="8.50in"/>
-  <fonts>
+  <fonts> 
     <substitutions>
       <substitution>
         <from font-family="Junicode-Light" font-style="italic"/>

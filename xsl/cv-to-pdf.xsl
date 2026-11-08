@@ -25,6 +25,7 @@
     <xsl:param name="marginLeft">0.75in</xsl:param>
     <xsl:param name="marginRight">0.75in</xsl:param>
     <xsl:param name="showMonth" select="'false'"/>
+    <xsl:param name="showLastUpdated" select="'true'"/>
 
     <xsl:param name="date"/>
     
@@ -59,25 +60,34 @@
         
         <root font-family="{$fontFamily}">
             <layout-master-set>
-                <simple-page-master  xsl:use-attribute-sets="page-dims"
-                    master-name="first-page"
->
-                    <region-body/>
+                <simple-page-master 
+                    xsl:use-attribute-sets="page-dims"
+                    master-name="first-page">
+                    <region-body region-name="xsl-region-body"/>
                 </simple-page-master>
                 <simple-page-master master-name="rest"
 
                     xsl:use-attribute-sets="page-dims"
                     margin-bottom=".4in">
           
-                    <region-body region-name="xsl-region-body" margin-bottom="0.35in"/>
+                    <region-body region-name="xsl-region-body" margin-bottom="0.4in"/>
                     <region-after region-name="xsl-region-after" extent="0.2in"/>
                     
                 </simple-page-master>
+                <simple-page-master master-name="last-page" 
+                    xsl:use-attribute-sets="page-dims"
+                    margin-bottom=".4in">
+                    <region-body region-name="xsl-region-body" margin-bottom="0.4in"/>
+                    <region-after region-name="last-page-footer" extent="0.2in"/>
+                </simple-page-master>
                 <page-sequence-master master-name="CV">
                     <repeatable-page-master-alternatives>
-                        <conditional-page-master-reference page-position="first" master-reference="rest"/>
+                        <conditional-page-master-reference 
+                            page-position="first" master-reference="first-page"/>
                         <conditional-page-master-reference 
                             page-position="rest" master-reference="rest"/>
+                        <conditional-page-master-reference 
+                            master-reference="last-page" page-position="last"/>
                     </repeatable-page-master-alternatives>
                 </page-sequence-master>
             </layout-master-set>
@@ -107,11 +117,34 @@
             </xsl:where-populated>
             
             <page-sequence master-reference="CV" id="CV">
+                
+                <static-content flow-name="last-page-footer">
+                    <fo:block text-align-last="justify" wrap-option="wrap"
+                        font-family="Inter" width="100%"
+                        font-size="{cv:font-scale(-5)}pt"
+                        >
+                        <fo:inline color="#c1bebe">
+                            <xsl:if test="$showLastUpdated = 'true'">
+                                Last updated: <xsl:value-of select="format-date(current-date(), '[MNn] [D01], [Y0001]')"/>
+                            </xsl:if>
+                        </fo:inline>
+                        <fo:leader leader-pattern="space" leader-length.minimum="0pt" 
+                            leader-length.optimum="0pt" 
+                            leader-length.maximum="100%"/>
+                        <fo:inline color="#686464"><xsl:value-of select="//cv/name/surname[1]"/> | <retrieve-marker retrieve-class-name="section" retrieve-position="last-starting-within-page"/> | <page-number/> of <page-number-citation-last ref-id="CV"/></fo:inline>
+                    </fo:block>
+                </static-content>
                 <static-content flow-name="xsl-region-after">
-                    <block text-align="right" color="#9c9c9c" font-size="{cv:font-scale(-1)}pt">
-                        <xsl:value-of select="//cv/name/surname[1]"/> | <retrieve-marker retrieve-class-name="section" retrieve-position="last-starting-within-page"/> | <page-number/> of <page-number-citation-last ref-id="CV"/>
+                    <fo:block text-align-last="justify" wrap-option="wrap"
+                        font-family="Inter" width="100%"
+                        font-size="{cv:font-scale(-5)}pt"
+                        >
                         
-                    </block>
+                        <fo:leader leader-pattern="space" leader-length.minimum="0pt" 
+                            leader-length.optimum="0pt" 
+                            leader-length.maximum="100%"/>
+                        <fo:inline color="#686464"><xsl:value-of select="//cv/name/surname[1]"/> | <retrieve-marker retrieve-class-name="section" retrieve-position="last-starting-within-page"/> | <page-number/> of <page-number-citation-last ref-id="CV"/></fo:inline>
+                    </fo:block>
                 </static-content>
                 <flow flow-name="xsl-region-body" line-stacking-strategy="font-height">
                     <xsl:apply-templates/>
@@ -142,7 +175,7 @@
     
     <xsl:template match="cv">
         <xsl:apply-templates select="name"/>
-        <block font-size="{$fontsize}pt" padding-bottom=".2em">
+        <block font-size="{cv:font-scale(-1)}pt" padding-bottom=".2em">
             <xsl:for-each select="* except (name, section, standoff)">
                 <xsl:apply-templates select="."/>
                 <xsl:if test="position() ne last()">
@@ -221,7 +254,14 @@
             <xsl:if test="parent::cv and head">
                 <block>
                     <marker marker-class-name="section">
-                        <xsl:value-of select="string(head)"/>
+                        <xsl:choose>
+                            <xsl:when test="@n">
+                                <xsl:value-of select="@n"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="string(head)"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </marker>
                 </block>
             </xsl:if>
@@ -319,11 +359,11 @@
                         <xsl:choose>
                             <xsl:when test="$dateCol=1">
                                 <xsl:sequence select="(18,
-                                        if ($showMonth = 'true' and 
+                                        if ($showMonth = 'true' and self::listJobs and
                                         (some $date in descendant::*[not(@hidden='true')]/(@to, @from, @when) 
                                             satisfies (cv:hasMonth($date) and not(ancestor::section[@type='service'])))) 
-                                            then 8 else (),
-                                        if (descendant::*[@to or @from]) then 6 else ()) => sum()"/>
+                                            then 6 else (),
+                                        if (descendant::*[@to or @from]) then 4 else ()) => sum()"/>
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:value-of select="22"/>
@@ -476,8 +516,15 @@
                                                 </xsl:otherwise>
                                             </xsl:choose>
                                         </xsl:when>
+                                        <!--Never show the month for an award, even if present-->
+                                        <xsl:when test="self::award and @when">
+                                            <xsl:value-of select="cv:formatSingleDate(@when, 'false')"/>
+                                        </xsl:when>
                                         <xsl:when test="@when">
                                             <xsl:value-of select="cv:formatSingleDate(@when)"/>
+                                        </xsl:when>
+                                        <xsl:when test="@to and @from and self::award">
+                                            <xsl:value-of select="cv:formatDateRange(@from,@to, false())"/>
                                         </xsl:when>
                                         <xsl:when test="@to and @from">
                                             <xsl:value-of select="cv:formatDateRange(@from,@to)"/>
